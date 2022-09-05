@@ -22,8 +22,8 @@ public class Cache <K, V>{
         }
         if (strategyType == typeOfStrategy.LRU){
             if (storage == typeOfStorage.RAM){
-                strategy = new LRU();
-            } else strategy = new LRUDisk();
+                strategy = new LRU(size);
+            } else strategy = new LRUDisk(size);
         }
     }
 
