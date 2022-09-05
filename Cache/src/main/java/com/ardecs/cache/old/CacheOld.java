@@ -1,6 +1,6 @@
-package com.ardecs.cache;
+package com.ardecs.cache.old;
 
-public interface Cache {
+public interface CacheOld {
     void add(String key, String value);
 
     Object get(String key);

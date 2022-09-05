@@ -1,11 +1,11 @@
-package com.ardecs.cache;
+package com.ardecs.cache.old;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CacheRAM implements Cache{
+public class CacheOldRAM implements CacheOld {
 
     private int sizeOfCache;
     private HashMap<String, String> mapCache;
@@ -13,7 +13,7 @@ public class CacheRAM implements Cache{
     private HashMap<String, Integer> mapCountOfUsing;
     private String typeOfStrategy;
 
-    public CacheRAM(int sizeOfCache, String typeOfStrategy) {
+    public CacheOldRAM(int sizeOfCache, String typeOfStrategy) {
         this.sizeOfCache = sizeOfCache;
         mapCache = new HashMap<>(sizeOfCache);
         this.typeOfStrategy = typeOfStrategy;

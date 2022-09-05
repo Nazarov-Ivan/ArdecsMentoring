@@ -1,11 +1,11 @@
-package com.ardecs.cache;
+package com.ardecs.cache.old;
 
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main
+public class MainOld
 {
     public static void main( String[] args ){
     try {
@@ -20,11 +20,11 @@ public class Main
         System.out.println("Перезапустите программу и введите стратегию удаления корректно");
         System.exit(0);
     }
-    Cache myCache = null;
+    CacheOld myCacheOld = null;
     if (typeOfStorage.equals("disk")){
-        myCache = new CacheDisk(sizeOfCache,typeOfStrategy);
+        myCacheOld = new CacheOldDisk(sizeOfCache,typeOfStrategy);
     } else if (typeOfStorage.equals("ram")){
-        myCache = new CacheRAM(sizeOfCache, typeOfStrategy);
+        myCacheOld = new CacheOldRAM(sizeOfCache, typeOfStrategy);
     } else {
         System.out.println("Перезапустите программу и введите хранилище корректно");
         System.exit(0);
@@ -33,22 +33,21 @@ public class Main
         System.out.println("Введите команду");
         String key = bufferedReader.readLine();
         if (key.equals("delete")) {
-            myCache.allDelete();
+            myCacheOld.allDelete();
             continue;
         }
-        if(myCache.get(key) == null){
+        if(myCacheOld.get(key) == null){
             System.out.println("Результат команды " + key +
                     " не закеширован, введите пожалуйста результат");
             String value = bufferedReader.readLine();
-            myCache.add(key,value);
+            myCacheOld.add(key,value);
             System.out.println("Результат сохранен");
         } else {
             System.out.println("Результатом выполнения команды " +
-                    key + " является " + myCache.get(key));
+                    key + " является " + myCacheOld.get(key));
         }
     }
-    } catch (
-    IOException e) {
+    } catch (IOException e) {
     System.out.println("Ошибка ввода-вывода");
 }
 }

@@ -1,4 +1,4 @@
-package com.ardecs.cache;
+package com.ardecs.cache.old;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CacheDisk implements Cache{
+public class CacheOldDisk implements CacheOld {
 
     private int sizeOfCache;
     private HashMap<String, String> mapCache;
@@ -16,7 +16,7 @@ public class CacheDisk implements Cache{
     String fileName;
     String fileNameHelp;
 
-    public CacheDisk(int sizeOfCache, String typeOfStrategy) {
+    public CacheOldDisk(int sizeOfCache, String typeOfStrategy) {
         this.sizeOfCache = sizeOfCache;
         mapCache = new HashMap<>(sizeOfCache);
         this.typeOfStrategy = typeOfStrategy;
