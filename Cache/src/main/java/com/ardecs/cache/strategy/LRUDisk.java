@@ -1,87 +1,81 @@
 package com.ardecs.cache.strategy;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
+import com.ardecs.cache.cache.KeyNotFoundException;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 
-public class LRUDisk<K, V extends Serializable> implements Strategy<K, V>, DiskStrategy<K, V>{
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-    String fileName = "LRUCache";
-    String fileNameHelp = "LRUHelpCache";
-    private HashMap<K, V> mapCache;
-    private LinkedList<K> listAgeOfUsing;
-    private int sizeOfCache;
+public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements DiskStrategy<K, V> {
+
+    private final String fileName = "LRUCache";
+    private Map<K, V> mapCache;
+    private final static Logger LOGGER = LoggerFactory.getLogger(LRUDisk.class);
 
     public LRUDisk(int sizeOfCache) {
-        this.sizeOfCache = sizeOfCache;
-        mapCache = new HashMap<>(sizeOfCache);
-        listAgeOfUsing = new LinkedList<>();
+        super(sizeOfCache);
+        mapCache = new LRUmap<K, V>(sizeOfCache);
     }
 
     @Override
     public void downloadToDisk() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-             FileOutputStream fileOutputStreamHelp = new FileOutputStream(fileNameHelp);
-             ObjectOutputStream objectOutputStreamHelp = new ObjectOutputStream(fileOutputStreamHelp)){
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));) {
             objectOutputStream.writeObject(mapCache);
-            objectOutputStreamHelp.writeObject(listAgeOfUsing);
         } catch (IOException e) {
-            System.out.println("Ошибка ввода-вывода");
+            LOGGER.error("Cache didn't save to disk");
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void uploadFromDisk() {
-        try(FileInputStream fileInputStream = new FileInputStream(fileName);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            FileInputStream fileInputStreamHelp = new FileInputStream(fileNameHelp);
-            ObjectInputStream objectInputStreamHelp = new ObjectInputStream(fileInputStreamHelp)){
-            mapCache = (HashMap<K, V>) objectInputStream.readObject();
-            listAgeOfUsing = (LinkedList<K>) objectInputStream.readObject();
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не создан");
-        } catch (IOException e) {
-            System.out.println("Диск пуст");
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName))) {
+            mapCache = (LinkedHashMap<K, V>) objectInputStream.readObject();
+        } catch (FileNotFoundException ex) {
+            LOGGER.error("File not found");
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            System.out.println("Disk is empty");
         } catch (ClassNotFoundException e) {
-            System.out.println("Класс не был найден");
+            LOGGER.error("Class not found");
+            throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public V get(K key) {
         if (mapCache.size() == 0) {
-            return null;
-        } else{
+            throw new KeyNotFoundException("key " + key + " not found in cache");
+        }
+        if (!mapCache.containsKey(key)) {
+            throw new KeyNotFoundException("key " + key + " not found in cache");
+        }
         uploadFromDisk();
-        if (listAgeOfUsing.remove(key)) {
-            listAgeOfUsing.addFirst(key);
-            downloadToDisk();
-            return mapCache.get(key);
-        }
-        }
-        return null;
+        V value = mapCache.get(key);
+        mapCache.remove(key);
+        mapCache.put(key, value);
+        downloadToDisk();
+        return value;
     }
 
     @Override
     public void put(K key, V value) {
-        listAgeOfUsing.remove(key);
-        while (listAgeOfUsing.size() >= this.sizeOfCache){
-            K keyForDelete = listAgeOfUsing.removeLast();
-            mapCache.remove(keyForDelete);
-        }
-        listAgeOfUsing.addFirst(key);
         mapCache.put(key, value);
         downloadToDisk();
     }
 
-
     @Override
     public void clear() {
         mapCache.clear();
-        listAgeOfUsing.clear();
         new File(fileName).delete();
-        new File(fileNameHelp).delete();
     }
 }

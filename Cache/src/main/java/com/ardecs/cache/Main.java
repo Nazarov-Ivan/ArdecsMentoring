@@ -3,11 +3,12 @@ package com.ardecs.cache;
 import com.ardecs.cache.cache.Cache;
 import com.ardecs.cache.models.User;
 import com.ardecs.cache.strategy.LFU;
+import com.ardecs.cache.strategy.LFUDisk;
 import com.ardecs.cache.strategy.LRU;
 
 public class Main {
     public static void main(String[] args) {
-        Cache lruCache = new Cache<>(new LFU<>(3));
+        Cache lruCache = new Cache<>(new LFUDisk<>(3));
         lruCache.clearCache();
         User one = new User(1, "Koly");
         User two = new User(2, "Sergei");
