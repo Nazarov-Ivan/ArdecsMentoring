@@ -1,12 +1,14 @@
 package com.ardecs.cache.strategy;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.ardecs.cache.cache.KeyNotFoundException;
 
-public class LFU<K, V extends Serializable> implements Strategy <K, V>{
-    private int sizeOfCache;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class LFU<K, V extends Serializable> implements Strategy<K, V> {
+    private final int sizeOfCache;
     protected HashMap<K, V> mapCache;
     protected HashMap<K, Integer> mapCountOfUsing;
 
@@ -16,22 +18,15 @@ public class LFU<K, V extends Serializable> implements Strategy <K, V>{
         mapCountOfUsing = new HashMap<>(sizeOfCache);
     }
 
-
     public void add(K key, V value) {
-        while (mapCache.size() >= this.sizeOfCache){
-            List<Integer> listValuesCountOfUsing = new ArrayList<>(mapCountOfUsing.values());
-            List<K> listOfMapCountKeys = new ArrayList<>(mapCountOfUsing.keySet());
-            Integer minNumberOfUse = listValuesCountOfUsing.stream().min(Math::min).orElse(listValuesCountOfUsing.get(0));
-            for (K keyForDelete : listOfMapCountKeys){
-                if (mapCountOfUsing.get(keyForDelete) == minNumberOfUse){
-                    mapCache.remove(keyForDelete);
-                    mapCountOfUsing.remove(keyForDelete);
-                    break;
-                }
-            }
+        while (mapCache.size() >= this.sizeOfCache) {
+            K minKey = mapCountOfUsing.entrySet().stream()
+                    .min(Map.Entry.comparingByValue(Integer::compareTo)).get().getKey();
+            mapCountOfUsing.remove(minKey);
+            mapCache.remove(minKey);
         }
         mapCache.put(key, value);
-        mapCountOfUsing.put(key,1);
+        mapCountOfUsing.put(key, 1);
     }
 
     @Override
@@ -42,18 +37,18 @@ public class LFU<K, V extends Serializable> implements Strategy <K, V>{
     @Override
     public V get(K key) {
         if (mapCache.size() == 0) {
-            return null;
-        } else if (mapCache.containsKey(key)){
+            throw new KeyNotFoundException("key "+key+" not found in cache");
+        } else if (mapCache.containsKey(key)) {
             int countOfUse = mapCountOfUsing.get(key);
             countOfUse++;
             mapCountOfUsing.put(key, countOfUse);
-            return mapCache.get(key);}
-        else return null;
+            return mapCache.get(key);
+        } else throw new KeyNotFoundException("key "+key+" not found in cache");
     }
 
     @Override
     public void clear() {
-            mapCache.clear();
-            mapCountOfUsing.clear();
+        mapCache.clear();
+        mapCountOfUsing.clear();
     }
 }

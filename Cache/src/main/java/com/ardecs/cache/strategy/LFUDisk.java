@@ -1,50 +1,57 @@
 package com.ardecs.cache.strategy;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import com.ardecs.cache.cache.KeyNotFoundException;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 
-public class LFUDisk<K, V extends Serializable> extends LFU <K, V> implements DiskStrategy<K, V>{
-    String fileName = "LFUCache";
-    String fileNameHelp = "LFUHelpCache";
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+
+public class LFUDisk<K, V extends Serializable> extends LFU<K, V> implements DiskStrategy<K, V> {
+    private final String fileName = "LFUCache";
+    private final String fileNameHelp = "LFUHelpCache";
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(LFUDisk.class);
 
     public LFUDisk(int sizeOfCache) {
         super(sizeOfCache);
         new LFU(sizeOfCache);
     }
 
-
     public void downloadToDisk() {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-             FileOutputStream fileOutputStreamHelp = new FileOutputStream(fileNameHelp);
-             ObjectOutputStream objectOutputStreamHelp = new ObjectOutputStream(fileOutputStreamHelp)){
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileName));
+             ObjectOutputStream objectOutputStreamHelp = new ObjectOutputStream(new FileOutputStream(fileNameHelp))) {
             objectOutputStream.writeObject(mapCache);
             objectOutputStreamHelp.writeObject(mapCountOfUsing);
         } catch (IOException e) {
-            System.out.println("Ошибка ввода-вывода");
+            LOGGER.error("Cache didn't save to disk");
+            throw new RuntimeException(e);
         }
     }
 
-
     public void uploadFromDisk() {
-        try(FileInputStream fileInputStream = new FileInputStream(fileName);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            FileInputStream fileInputStreamHelp = new FileInputStream(fileNameHelp);
-            ObjectInputStream objectInputStreamHelp = new ObjectInputStream(fileInputStreamHelp)){
-            HashMap<K, V> mapFromDisk = (HashMap<K, V>) objectInputStream.readObject();
-            mapCache = mapFromDisk;
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName));
+             ObjectInputStream objectInputStreamHelp = new ObjectInputStream(new FileInputStream(fileNameHelp))) {
+            mapCache = (HashMap<K, V>) objectInputStream.readObject();
             HashMap<K, Integer> mapCount = (HashMap<K, Integer>) objectInputStreamHelp.readObject();
             if (mapCount != null) {
                 mapCountOfUsing = mapCount;
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не создан");
-        } catch (IOException e) {
-            System.out.println("Диск пуст");
+        } catch (FileNotFoundException ex) {
+            LOGGER.error("File not found");
+            throw new RuntimeException(ex);
+        } catch (IOException ex) {
+            System.out.println("Disk is empty");
         } catch (ClassNotFoundException e) {
-            System.out.println("Класс не был найден");
+            LOGGER.error("Class not found");
+            throw new RuntimeException(e);
         }
     }
 
@@ -58,15 +65,14 @@ public class LFUDisk<K, V extends Serializable> extends LFU <K, V> implements Di
     public V get(K key) {
         uploadFromDisk();
         if (mapCache.size() == 0) {
-            return null;
-        } else if (mapCache.containsKey(key)){
-                int countOfUse = mapCountOfUsing.get(key);
-                countOfUse++;
-                mapCountOfUsing.put(key, countOfUse);
-                downloadToDisk();
-                return mapCache.get(key);
-            }
-        else return null;
+            throw new KeyNotFoundException("key "+key+" not found in cache");
+        } else if (mapCache.containsKey(key)) {
+            int countOfUse = mapCountOfUsing.get(key);
+            countOfUse++;
+            mapCountOfUsing.put(key, countOfUse);
+            downloadToDisk();
+            return mapCache.get(key);
+        } else throw new KeyNotFoundException("key "+key+" not found in cache");
     }
 
     @Override
