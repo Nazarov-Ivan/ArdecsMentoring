@@ -1,17 +1,15 @@
 package com.ardecs.cache.strategy;
 
-import com.ardecs.cache.cache.KeyNotFoundException;
+import com.ardecs.cache.exceptions.KeyNotFoundException;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LRU<K, V extends Serializable> implements Strategy<K, V> {
-    private LinkedHashMap<K, V> mapCache;
-    protected int sizeOfCache;
+public class LRU<K, V extends Serializable> implements Strategy<K, V>, Serializable {
+    protected LinkedHashMap<K, V> mapCache;
 
     public LRU(int sizeOfCache) {
-        this.sizeOfCache = sizeOfCache;
         mapCache = new LinkedHashMap<K, V>(sizeOfCache, .75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry eldest) {

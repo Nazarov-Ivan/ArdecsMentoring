@@ -1,11 +1,12 @@
 package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.cache.Cache;
-import com.ardecs.cache.cache.KeyNotFoundException;
-import com.ardecs.cache.cache.KeyValueIsNullException;
+import com.ardecs.cache.exceptions.KeyNotFoundException;
 import com.ardecs.cache.models.User;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +19,7 @@ public class LFUTest {
     User five = new User(5, "Katy");
 
     @Before
-    public void setUp() {
+    public void setUp() throws FileNotFoundException {
         lfuCache.putToCache(one.getId(), one);
         lfuCache.putToCache(two.getId(), two);
         lfuCache.putToCache(three.getId(), three);
@@ -27,23 +28,23 @@ public class LFUTest {
     }
 
     @Test
-    public void getShouldReturnValue() {
+    public void getShouldReturnValue() throws FileNotFoundException {
         assertEquals(three, lfuCache.getFromCache(3));
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void getShouldReturnException() throws KeyNotFoundException {
+    public void getShouldReturnException() throws KeyNotFoundException, FileNotFoundException {
         lfuCache.getFromCache(6);
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void clearShouldReturnException() throws KeyNotFoundException {
+    public void clearShouldReturnException() throws KeyNotFoundException, FileNotFoundException {
         lfuCache.clearCache();
         lfuCache.getFromCache(1);
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void lfuShouldDeleteRarest() throws KeyNotFoundException {
+    public void lfuShouldDeleteRarest() throws KeyNotFoundException, FileNotFoundException {
         lfuCache.getFromCache(1);
         lfuCache.getFromCache(2);
         lfuCache.getFromCache(3);

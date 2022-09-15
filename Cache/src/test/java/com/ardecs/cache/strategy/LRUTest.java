@@ -1,10 +1,12 @@
 package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.cache.Cache;
-import com.ardecs.cache.cache.KeyNotFoundException;
+import com.ardecs.cache.exceptions.KeyNotFoundException;
 import com.ardecs.cache.models.User;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
 
 import static org.junit.Assert.*;
 
@@ -26,23 +28,23 @@ public class LRUTest {
     }
 
     @Test
-    public void getShouldReturnValue() {
+    public void getShouldReturnValue() throws FileNotFoundException {
         assertEquals(three, lruCache.getFromCache(3));
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void getShouldReturnException() throws KeyNotFoundException {
+    public void getShouldReturnException() throws KeyNotFoundException, FileNotFoundException {
         lruCache.getFromCache(6);
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void clearShouldReturnException() throws KeyNotFoundException {
+    public void clearShouldReturnException() throws KeyNotFoundException, FileNotFoundException {
         lruCache.clearCache();
         lruCache.getFromCache(1);
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void lfuShouldDeleteRarest() throws KeyNotFoundException {
+    public void lfuShouldDeleteRarest() throws KeyNotFoundException, FileNotFoundException {
         lruCache.getFromCache(1);
         lruCache.getFromCache(1);
         lruCache.getFromCache(1);

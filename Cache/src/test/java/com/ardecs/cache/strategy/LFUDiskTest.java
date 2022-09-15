@@ -1,17 +1,18 @@
 package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.cache.Cache;
-import com.ardecs.cache.cache.KeyNotFoundException;
+import com.ardecs.cache.exceptions.KeyNotFoundException;
 import com.ardecs.cache.models.User;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class LFUDiskTest {
     Cache lfuDiskCache = new Cache<>(new LFUDisk<>(5));
+
     User one = new User(1, "Kolya");
     User two = new User(2, "Sergei");
     User three = new User(3, "Oly");
@@ -19,7 +20,7 @@ public class LFUDiskTest {
     User five = new User(5, "Katy");
 
     @Before
-    public void setUp()  {
+    public void setUp() throws FileNotFoundException {
         lfuDiskCache.putToCache(one.getId(), one);
         lfuDiskCache.putToCache(two.getId(), two);
         lfuDiskCache.putToCache(three.getId(), three);
@@ -28,7 +29,7 @@ public class LFUDiskTest {
     }
 
     @Test
-    public void getShouldReturnValue() {
+    public void getShouldReturnValue() throws FileNotFoundException {
         assertEquals(one, lfuDiskCache.getFromCache(1));
         assertEquals(two, lfuDiskCache.getFromCache(2));
         assertEquals(three, lfuDiskCache.getFromCache(3));
@@ -38,18 +39,18 @@ public class LFUDiskTest {
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void getShouldReturnException() throws KeyNotFoundException {
+    public void getShouldReturnException() throws KeyNotFoundException, FileNotFoundException {
         lfuDiskCache.getFromCache(6);
     }
 
     @Test(expected = RuntimeException.class)
-    public void clearShouldReturnException() throws RuntimeException {
+    public void clearShouldReturnException() throws RuntimeException, FileNotFoundException {
         lfuDiskCache.clearCache();
         lfuDiskCache.getFromCache(1);
     }
 
     @Test(expected = KeyNotFoundException.class)
-    public void lfuShouldDeleteRarest() throws KeyNotFoundException {
+    public void lfuShouldDeleteRarest() throws KeyNotFoundException, FileNotFoundException {
         lfuDiskCache.getFromCache(1);
         lfuDiskCache.getFromCache(2);
         lfuDiskCache.getFromCache(3);
