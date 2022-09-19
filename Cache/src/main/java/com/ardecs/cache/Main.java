@@ -1,55 +1,46 @@
 package com.ardecs.cache;
 
+import com.ardecs.cache.cache.Cache;
+import com.ardecs.cache.models.User;
+import com.ardecs.cache.strategy.LFU;
+import com.ardecs.cache.strategy.LFUDisk;
+import com.ardecs.cache.strategy.LRUDisk;
+import org.apache.commons.lang3.SerializationUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
 
-public class Main
-{
-    public static void main( String[] args ){
-    try {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Выберите хранилище: disk, ram");
-        String typeOfStorage = bufferedReader.readLine();
-        System.out.println("Введите размер кеша");
-        int sizeOfCache = Integer.parseInt(bufferedReader.readLine());
-        System.out.println("Выберите стратегию удаления старых элементов: LFU, MRU, LRU");
-        String typeOfStrategy = bufferedReader.readLine();
-    if ((typeOfStrategy.equals("LFU") == false) && (typeOfStrategy.equals("MRU") == false) && (typeOfStrategy.equals("LRU") == false)){
-        System.out.println("Перезапустите программу и введите стратегию удаления корректно");
-        System.exit(0);
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Cache lruCache = new Cache<>(new LRUDisk<>(3));
+        Cache lfuCache = new Cache<>(new LRUDisk<>(2));
+        User one = new User(1, "Kolya");
+        User two = new User(2, "Sergei");
+        User three = new User(3, "Oly");
+        User four = new User(4, "Zhenya");
+        User five = new User(5, "Katy");
+        lruCache.putToCache(1,one);
+        lruCache.putToCache(2,two);
+        lruCache.putToCache(3,three);
+        System.out.println(lruCache.getFromCache(1));
+        System.out.println(lruCache.getFromCache(3));
+
+        lruCache.putToCache(4, four);
+
+        System.out.println(lruCache);
+
+//        HashMap cache = new HashMap<Integer, Integer>();
+//        cache.put(1,1);
+//        String fileName = "123";
+//
+//        OutputStream outputStream = Files.newOutputStream(Paths.get(fileName));
+//        SerializationUtils.serialize((Serializable) cache,outputStream);
+//        InputStream inputStream = Files.newInputStream(Paths.get(fileName));
+//        cache = (HashMap) SerializationUtils.deserialize(inputStream);
+
+
     }
-    Cache myCache = null;
-    if (typeOfStorage.equals("disk")){
-        myCache = new CacheDisk(sizeOfCache,typeOfStrategy);
-    } else if (typeOfStorage.equals("ram")){
-        myCache = new CacheRAM(sizeOfCache, typeOfStrategy);
-    } else {
-        System.out.println("Перезапустите программу и введите хранилище корректно");
-        System.exit(0);
-    }
-    while (true){
-        System.out.println("Введите команду");
-        String key = bufferedReader.readLine();
-        if (key.equals("delete")) {
-            myCache.allDelete();
-            continue;
-        }
-        if(myCache.get(key) == null){
-            System.out.println("Результат команды " + key +
-                    " не закеширован, введите пожалуйста результат");
-            String value = bufferedReader.readLine();
-            myCache.add(key,value);
-            System.out.println("Результат сохранен");
-        } else {
-            System.out.println("Результатом выполнения команды " +
-                    key + " является " + myCache.get(key));
-        }
-    }
-    } catch (
-    IOException e) {
-    System.out.println("Ошибка ввода-вывода");
-}
-}
 }
