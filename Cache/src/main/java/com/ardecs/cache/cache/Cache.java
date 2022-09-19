@@ -26,6 +26,4 @@ public class Cache<K, V> {
     public void clearCache() {
         strategy.clear();
     }
-
-
 }

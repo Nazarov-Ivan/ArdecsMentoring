@@ -1,19 +1,8 @@
 package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.exceptions.KeyNotFoundException;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Strategy<K, V> {
 

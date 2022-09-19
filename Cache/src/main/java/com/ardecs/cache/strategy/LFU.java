@@ -2,7 +2,6 @@ package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.exceptions.KeyNotFoundException;
 
-import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,12 +47,12 @@ public class LFU<K, V extends Serializable> implements Strategy<K, V>, Serializa
 
     @Override
     public V get(K key) {
-        if (mapCache.size() == 0) {
+        if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
-        } else if (mapCache.containsKey(key)) {
+        } else {
             mapCache.get(key).countOfUse++;
             return mapCache.get(key).value;
-        } else throw new KeyNotFoundException("key " + key + " not found in cache");
+        }
     }
 
     @Override
