@@ -16,10 +16,7 @@ public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Str
     @Override
     public V get(K key) {
         DiskStrategy.uploadFromDisk(mapCache, fileName);
-        if (mapCache.size() == 0) {
-            throw new KeyNotFoundException("key " + key + " not found in cache");
-        }
-        if (!mapCache.containsKey(key)) {
+        if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
         }
         V value = mapCache.get(key);

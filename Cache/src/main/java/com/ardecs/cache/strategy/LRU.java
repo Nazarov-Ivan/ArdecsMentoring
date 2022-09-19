@@ -25,10 +25,7 @@ public class LRU<K, V extends Serializable> implements Strategy<K, V>, Serializa
 
     @Override
     public V get(K key) {
-        if (mapCache.size() == 0) {
-            throw new KeyNotFoundException("key " + key + " not found in cache");
-        }
-        if (!mapCache.containsKey(key)) {
+        if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
         }
         return mapCache.get(key);
