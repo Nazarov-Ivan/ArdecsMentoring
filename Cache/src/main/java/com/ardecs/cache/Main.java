@@ -20,13 +20,7 @@ public class Main {
         lruCache.putToCache(3, three);
         System.out.println(lruCache.getFromCache(1));
         System.out.println(lruCache.getFromCache(3));
-
         lruCache.putToCache(4, four);
-
         System.out.println(lruCache);
-
-
-
-
     }
 }

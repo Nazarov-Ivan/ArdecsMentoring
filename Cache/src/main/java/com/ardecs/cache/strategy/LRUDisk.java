@@ -3,6 +3,7 @@ package com.ardecs.cache.strategy;
 import com.ardecs.cache.exceptions.KeyNotFoundException;
 import java.io.File;
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 
 public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Strategy<K, V> {
 
@@ -15,7 +16,7 @@ public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Str
 
     @Override
     public V get(K key) {
-        DiskStrategy.uploadFromDisk(mapCache, fileName);
+        mapCache = (LinkedHashMap<K, V>) DiskStrategy.uploadFromDisk(mapCache, fileName);
         if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
         }
@@ -27,7 +28,7 @@ public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Str
     @Override
     public void put(K key, V value) {
         if (mapCache.size() != 0) {
-            DiskStrategy.uploadFromDisk(mapCache, fileName);
+            mapCache = (LinkedHashMap<K, V>) DiskStrategy.uploadFromDisk(mapCache, fileName);
         }
         mapCache.put(key, value);
         DiskStrategy.downloadToDisk(mapCache, fileName);

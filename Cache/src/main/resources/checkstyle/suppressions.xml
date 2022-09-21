@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+        "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+    <!-- Suppressions for Main class -->
+    <suppress checks="MagicNumber"              files="Main.java"/>
+    <suppress checks="RegexpSingleline"              files="Main.java"/>
+    <suppress checks="EmptyLineSeparator"              files="Main.java"/>
+    <suppress checks="HideUtilityClassConstructor"              files="Main.java"/>
+</suppressions>

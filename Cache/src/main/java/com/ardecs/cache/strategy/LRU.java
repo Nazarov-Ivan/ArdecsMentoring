@@ -8,9 +8,10 @@ import java.util.Map;
 
 public class LRU<K, V extends Serializable> implements Strategy<K, V>, Serializable {
     protected LinkedHashMap<K, V> mapCache;
+    private final Float loadFactor = 0.75f;
 
     public LRU(int sizeOfCache) {
-        mapCache = new LinkedHashMap<K, V>(sizeOfCache, .75f, true) {
+        mapCache = new LinkedHashMap<K, V>(sizeOfCache, loadFactor, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry eldest) {
                 return sizeOfCache < mapCache.size();

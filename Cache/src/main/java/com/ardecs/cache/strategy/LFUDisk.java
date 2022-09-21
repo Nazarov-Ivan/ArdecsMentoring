@@ -15,7 +15,7 @@ public class LFUDisk<K, V extends Serializable> extends LFU<K, V> implements Str
     @Override
     public void put(K key, V value)  {
         if (mapCache.size() != 0) {
-            DiskStrategy.uploadFromDisk(mapCache, fileName);
+            mapCache = DiskStrategy.uploadFromDisk(mapCache, fileName);
         }
         add(key, value);
         DiskStrategy.downloadToDisk(mapCache, fileName);
@@ -23,7 +23,7 @@ public class LFUDisk<K, V extends Serializable> extends LFU<K, V> implements Str
 
     @Override
     public V get(K key) {
-        DiskStrategy.uploadFromDisk(mapCache, fileName);
+        mapCache = DiskStrategy.uploadFromDisk(mapCache, fileName);
         if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
         } else {

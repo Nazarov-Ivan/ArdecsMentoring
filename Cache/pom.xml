@@ -103,7 +103,8 @@
           </execution>
         </executions>
         <configuration>
-          <configLocation>src/main/resources/checkstyle.xml</configLocation>
+          <configLocation>src/main/resources/checkstyle/checkstyle.xml</configLocation>
+          <suppressionsLocation>src/main/resources/checkstyle/suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
     </plugins>

@@ -23,15 +23,17 @@ public abstract class DiskStrategy {
         }
     }
 
-    public static void uploadFromDisk(HashMap mapCache, String fileName) {
+    public static HashMap uploadFromDisk(HashMap mapCache, String fileName) {
+        HashMap map = mapCache;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(fileName))) {
-            mapCache = (HashMap) objectInputStream.readObject();
+            map = (HashMap) objectInputStream.readObject();
         } catch (FileNotFoundException | ClassNotFoundException ex) {
             LOGGER.error("File or class not found", ex);
             throw new RuntimeException(ex);
         } catch (IOException ex) {
             LOGGER.error("Disk is empty", ex);
         }
+        return map;
     }
 
 }
