@@ -1,19 +1,9 @@
 package com.ardecs.cache.strategy;
 
 import com.ardecs.cache.exceptions.KeyNotFoundException;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Strategy<K, V> {
 
@@ -26,11 +16,8 @@ public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Str
 
     @Override
     public V get(K key) {
-        DiskStrategy.uploadFromDisk(mapCache, fileName);
-        if (mapCache.size() == 0) {
-            throw new KeyNotFoundException("key " + key + " not found in cache");
-        }
-        if (!mapCache.containsKey(key)) {
+        mapCache = (LinkedHashMap<K, V>) DiskStrategy.uploadFromDisk(mapCache, fileName);
+        if (mapCache.size() == 0 || !mapCache.containsKey(key)) {
             throw new KeyNotFoundException("key " + key + " not found in cache");
         }
         V value = mapCache.get(key);
@@ -41,7 +28,7 @@ public class LRUDisk<K, V extends Serializable> extends LRU<K, V> implements Str
     @Override
     public void put(K key, V value) {
         if (mapCache.size() != 0) {
-            DiskStrategy.uploadFromDisk(mapCache, fileName);
+            mapCache = (LinkedHashMap<K, V>) DiskStrategy.uploadFromDisk(mapCache, fileName);
         }
         mapCache.put(key, value);
         DiskStrategy.downloadToDisk(mapCache, fileName);
