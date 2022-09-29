@@ -40,6 +40,7 @@ INSERT INTO accessory
 (23, 'легкосплавные диски 19"');
 (24, 'легкосплавные диски 20"');
 (25, 'легкосплавные диски 21"');
+(26, 'Рулевое управление M Sport');
 
 /* todo --------------filling in the table "brand"---------------------*/
 INSERT INTO brand 
@@ -92,41 +93,89 @@ INSERT INTO engine
 (5, 'бензин, 8,9л/100км', 'BMW M40i', 387);
 (6, 'дизель, 5,6л/100км', 'BMW xDrive20d', 190);
 (7, 'дизель, 6,4л/100км', 'BMW xDrive30d', 249);
+(8, 'бензин, 7,0/100км', 'M20A-FKS', 160);
+(9, 'бензин, 7,5/100км', '3ZR-FAE', 150);
+(10, 'бензин, 9,0/100км', '8AR-FTS турбо', 235);
+(11, 'бензин, 7,9/100км', 'A25A-FKS', 200);
+(12, 'дизель, 9,7/100км', 'F33A-FTV турбо', 305);
+(13, 'бензин, 9,5/100км', '2AR-FE', 180);
+(14, 'бензин, 6,4/100км', 'MPI 90', 90);
+(15, 'бензин, 6,4/100км', 'MPI 110', 110);
+(16, 'бензин, 6,0/100км', 'TSI 125', 125);
+(17, 'бензин, 7,5/100км', 'TSI 4 MOTION 150', 150);
+(18, 'бензин, 8,6/100км', 'TSI 4 MOTION 180', 180);
+(19, 'бензин, 9,2/100км', 'TSI 4 MOTION 220', 220);
+(20, 'бензин, 7,5/100км', 'TSI 150', 150);
+(21, 'дизель, 7,1/100км', 'V6 TDI 4Motion 249', 249);
 
 /* todo --------------filling in the table "model"---------------------*/
 INSERT INTO model 
 (id, name, brand_id, price) VALUES 
-(1, '', , 2300000);
+(1, 'X1', 1, 3280000);
+(2, 'X2', 1, 3520000);
+(3, 'X3', 1, 5320000);
+(4, 'X4', 1, 5700000);
+(5, 'X5', 1, 7190000);
+(6, 'X6', 1, 8400000);
+(7, 'X7', 1, 9350000);
+(8, '2 серии Coupe', 1, 3970000);
+(9, '3 серии', 1, 3930000);
+(10, 'UX', 2, 3286000);
+(11, 'NX', 2, 4853000);
+(12, 'RX', 2, 5348000);
+(13, 'RX L', 2, 6730000);
+(14, 'GX', 2, 7525000);
+(15, 'LX', 2, 10017000);
+(16, 'ES', 2, 4314000);
+(17, 'LS', 2, 9682000);
+(18, 'Corolla', 3, 1955000);
+(19, 'Camry', 3, 2498000);
+(20, 'RAV4', 3, 2671000);
+(21, 'Land Cruiser Prado', 3, 3951000);
+(22, 'Polo', 4, 1620900);
+(23, 'Tiguan', 4, 3375000);
+(24, 'Touareg', 4, 8669000);
 
 /* todo --------------filling in the table "model_complectation"---------------------*/
 INSERT INTO model_complectation 
 (model_id, comp_id) VALUES 
-();
+(1, 1);
+(1, 2);
+(1, 3);
+(1, 4);
+(1, 5);
+(1, 6);
 
 /* todo --------------filling in the table "accessory_model_complect"---------------------*/
 INSERT INTO accessory_model_complect 
 (id, access_id, model_id, comp_id, price) VALUES 
-();
+(1, 26, 1, 1, 23500);
 
 
 /* todo --------------filling in the table "color_model_complect"---------------------*/
 INSERT INTO color_model_complect 
 (id, color_id, model_id, comp_id, price) VALUES 
-();
+(1, 1, 1, 1, 0);
 
 
 /* todo --------------filling in the table "engine_model_complect"---------------------*/
 INSERT INTO engine_model_complect 
 (id, engine_id, model_id, comp_id, price) VALUES 
-();
+(1, 1, 1, 1, 0);
+
 
 
 /* todo --------------filling in the table "transmissoin"---------------------*/
 INSERT INTO transmissoin
 (id, name, description) VALUES 
-();
+(1, '4WDА8', 'Полный привод, АКПП 8');
+(2, 'FFА8', 'Передний привод, АКПП 8');
+(3, 'FRА8', 'Задний привод, АКПП 8');
+(4, '4WDM6', 'Полный привод, МКПП 6');
+(5, 'FFM6', 'Передний привод, МКПП 6');
+(6, 'FRM6', 'Задний привод, МКПП 6');
 
 /* todo --------------filling in the table "trans_model_complect"---------------------*/
 INSERT INTO trans_model_complect
-(id, model_id, comp_id, price) VALUES 
-();
+(id,  trans_id, model_id, comp_id, price) VALUES 
+(1, 3, 1, 1, 0);
