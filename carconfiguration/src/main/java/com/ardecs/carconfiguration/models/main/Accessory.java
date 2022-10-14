@@ -28,7 +28,7 @@ public class Accessory {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "access")
+    @OneToMany(mappedBy = "accessory")
     private Set<AccessoryModelComplect> accessoryModelComplects
             = new LinkedHashSet<>();
 

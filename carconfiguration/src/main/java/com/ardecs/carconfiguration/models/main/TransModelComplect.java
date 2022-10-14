@@ -1,14 +1,6 @@
 package com.ardecs.carconfiguration.models.main;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -26,6 +18,10 @@ public class TransModelComplect {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumns({
+            @JoinColumn(name = "model_id", referencedColumnName = "model_id"),
+            @JoinColumn(name = "comp_id", referencedColumnName = "comp_id")
+    })
     private ModelComplectation modelComplectationTrans;
 
     @NotNull

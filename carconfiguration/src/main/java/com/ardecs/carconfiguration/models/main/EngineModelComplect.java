@@ -1,14 +1,6 @@
 package com.ardecs.carconfiguration.models.main;
 
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -28,6 +20,10 @@ public class EngineModelComplect {
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "model_id", referencedColumnName = "model_id"),
+            @JoinColumn(name = "comp_id", referencedColumnName = "comp_id")
+    })
     private ModelComplectation modelComplectationEngine;
 
     public Integer getPrice() {

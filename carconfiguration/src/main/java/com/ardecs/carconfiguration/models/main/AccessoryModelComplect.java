@@ -1,14 +1,6 @@
 package com.ardecs.carconfiguration.models.main;
 
-import javax.persistence.FetchType;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -23,15 +15,19 @@ public class AccessoryModelComplect {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "access_id", nullable = false)
-    private Accessory access;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ModelComplectation modelComplectationAccessory;
+    private Accessory accessory;
 
     @NotNull
     @Column(name = "price", nullable = false)
     private Integer price;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumns({
+            @JoinColumn(name = "model_id", referencedColumnName = "model_id"),
+            @JoinColumn(name = "comp_id", referencedColumnName = "comp_id")
+    })
+    private ModelComplectation modelComplectationAccessory;
 
     public Integer getPrice() {
         return price;
@@ -48,13 +44,11 @@ public class AccessoryModelComplect {
     public void setModelComplectationAccessory(ModelComplectation modelComplectation) {
         this.modelComplectationAccessory = modelComplectation;
     }
-
-    public Accessory getAccess() {
-        return access;
+    public Accessory getAccessory() {
+        return accessory;
     }
-
-    public void setAccess(Accessory access) {
-        this.access = access;
+    public void setAccessory(Accessory access) {
+        this.accessory = access;
     }
 
     public Long getId() {
