@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.models.main;
+package com.ardecs.carconfiguration.models.mainEntities;
 
 import javax.persistence.GenerationType;
 import java.util.LinkedHashSet;
@@ -12,9 +12,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+
 @Entity
-@Table(name = "brand")
-public class Brand {
+@Table(name = "complectation")
+public class Complectation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -26,15 +28,15 @@ public class Brand {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "brand")
-    private Set<Model> models = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "comp")
+    private Set<ModelComplectation> complectationModels = new LinkedHashSet<>();
 
-    public Set<Model> getModels() {
-        return models;
+    public Set<ModelComplectation> getComplectationModels() {
+        return complectationModels;
     }
 
-    public void setModels(Set<Model> models) {
-        this.models = models;
+    public void setComplectationModels(Set<ModelComplectation> complectationModels) {
+        this.complectationModels = complectationModels;
     }
 
     public String getName() {

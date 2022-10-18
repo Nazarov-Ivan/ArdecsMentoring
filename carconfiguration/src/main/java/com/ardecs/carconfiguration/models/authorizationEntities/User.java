@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.models.authorization;
+package com.ardecs.carconfiguration.models.authorizationEntities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,40 +1,41 @@
-package com.ardecs.carconfiguration.models.main;
+package com.ardecs.carconfiguration.models.authorizationEntities;
 
-import javax.persistence.GenerationType;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "color")
-public class Color {
+@Table(name = "role")
+public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
-    @Size(min = 2, max = 35, message = "Name should be between "
+    @Size(min = 2, max = 15, message = "Name should be between "
             + "2 and 50 characters")
     @NotEmpty(message = "Name should not be empty")
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "color")
-    private Set<ColorModelComplect> colorModelComplects = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "role")
+    private Set<User> users = new LinkedHashSet<>();
 
-    public Set<ColorModelComplect> getColorModelComplects() {
-        return colorModelComplects;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setColorModelComplects(Set<ColorModelComplect> colorModelComplects) {
-        this.colorModelComplects = colorModelComplects;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public String getName() {
@@ -45,11 +46,11 @@ public class Color {
         this.name = name;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 }

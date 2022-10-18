@@ -1,8 +1,8 @@
-package com.ardecs.carconfiguration.models.main;
+package com.ardecs.carconfiguration.models.mainEntities;
 
-import javax.persistence.GenerationType;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,10 +12,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-
 @Entity
-@Table(name = "complectation")
-public class Complectation {
+@Table(name = "transmissoin")
+public class Transmission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,18 +24,29 @@ public class Complectation {
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
     @NotEmpty(message = "Name should not be empty")
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "comp")
-    private Set<ModelComplectation> complectationModels = new LinkedHashSet<>();
+    @Column(name = "description")
+    private String description;
 
-    public Set<ModelComplectation> getComplectationModels() {
-        return complectationModels;
+    @OneToMany(mappedBy = "trans")
+    private Set<TransModelComplect> transModelComplects = new LinkedHashSet<>();
+
+    public Set<TransModelComplect> getTransModelComplects() {
+        return transModelComplects;
     }
 
-    public void setComplectationModels(Set<ModelComplectation> complectationModels) {
-        this.complectationModels = complectationModels;
+    public void setTransModelComplects(Set<TransModelComplect> transModelComplects) {
+        this.transModelComplects = transModelComplects;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getName() {

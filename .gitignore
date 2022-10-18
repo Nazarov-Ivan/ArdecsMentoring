@@ -17,6 +17,8 @@ target/
 out/
 .mvn/wrapper/maven-wrapper.jar
 .mvn/timing.properties
+mvnw
+mvnw.cmd
 
 # Package Files #
 *.jar
