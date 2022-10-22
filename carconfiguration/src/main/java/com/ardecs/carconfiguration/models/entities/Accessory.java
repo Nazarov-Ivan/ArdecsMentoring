@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.models.mainEntities;
+package com.ardecs.carconfiguration.models.entities;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

@@ -1,5 +1,6 @@
-package com.ardecs.carconfiguration.models.mainEntities;
+package com.ardecs.carconfiguration.models.entities;
 
+import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -7,25 +8,26 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Entity
-@Table(name = "engine")
-public class Engine {
 
+@Entity
+@Table(name = "model")
+public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Lob
-    @Column(name = "description")
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
@@ -34,26 +36,26 @@ public class Engine {
     private String name;
 
     @NotNull
-    @Column(name = "power", nullable = false)
-    private Integer power;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
-    @OneToMany(mappedBy = "engine")
-    private Set<EngineModelComplect> engineModelComplects = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "model")
+    private Set<ModelComplectation> modelComplectations = new LinkedHashSet<>();
 
-    public Set<EngineModelComplect> getEngineModelComplects() {
-        return engineModelComplects;
+    public Set<ModelComplectation> getModelComplectations() {
+        return modelComplectations;
     }
 
-    public void setEngineModelComplects(Set<EngineModelComplect> engineModelComplects) {
-        this.engineModelComplects = engineModelComplects;
+    public void setModelComplectations(Set<ModelComplectation> modelComplectations) {
+        this.modelComplectations = modelComplectations;
     }
 
-    public Integer getPower() {
-        return power;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setPower(Integer power) {
-        this.power = power;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
     public String getName() {
@@ -64,19 +66,19 @@ public class Engine {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Brand getBrand() {
+        return brand;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
     }
 }

@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.models.mainEntities;
+package com.ardecs.carconfiguration.models.entities;
 
 import org.hibernate.Hibernate;
 

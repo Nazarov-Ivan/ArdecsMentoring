@@ -1,8 +1,8 @@
-package com.ardecs.carconfiguration.models.mainEntities;
+package com.ardecs.carconfiguration.models.entities;
 
-import javax.persistence.GenerationType;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,8 +13,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "brand")
-public class Brand {
+@Table(name = "transmissoin")
+public class Transmission {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,18 +24,29 @@ public class Brand {
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
     @NotEmpty(message = "Name should not be empty")
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "brand")
-    private Set<Model> models = new LinkedHashSet<>();
+    @Column(name = "description")
+    private String description;
 
-    public Set<Model> getModels() {
-        return models;
+    @OneToMany(mappedBy = "trans")
+    private Set<TransModelComplect> transModelComplects = new LinkedHashSet<>();
+
+    public Set<TransModelComplect> getTransModelComplects() {
+        return transModelComplects;
     }
 
-    public void setModels(Set<Model> models) {
-        this.models = models;
+    public void setTransModelComplects(Set<TransModelComplect> transModelComplects) {
+        this.transModelComplects = transModelComplects;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getName() {
