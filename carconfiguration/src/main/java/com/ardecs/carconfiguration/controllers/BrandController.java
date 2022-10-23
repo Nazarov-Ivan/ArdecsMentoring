@@ -1,8 +1,8 @@
 package com.ardecs.carconfiguration.controllers;
 
-import com.ardecs.carconfiguration.dto.AccessoryDTO;
-import com.ardecs.carconfiguration.models.entities.Accessory;
-import com.ardecs.carconfiguration.services.AccessoryService;
+import com.ardecs.carconfiguration.dto.BrandDTO;
+import com.ardecs.carconfiguration.models.entities.Brand;
+import com.ardecs.carconfiguration.services.BrandService;
 import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -26,53 +26,52 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping()
-public class AccessoryController {
-
-    private final AccessoryService accessoryService;
+public class BrandController {
+    private final BrandService brandService;
     private final ModelMapper modelMapper;
 
-    public AccessoryController(AccessoryService accessoryService, ModelMapper modelMapper) {
-        this.accessoryService = accessoryService;
+    public BrandController(BrandService brandService, ModelMapper modelMapper) {
+        this.brandService = brandService;
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/accessories")
-    public List<AccessoryDTO> getAccessories() {
-        return accessoryService.readAllAccessories().stream().map(this::convertToAccessoryDTO)
+    @GetMapping("/brands")
+    public List<BrandDTO> getBrands() {
+        return brandService.readAllBrands().stream().map(this::convertToBrandDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("accessory/{id}")
-    public AccessoryDTO getAccessory(@PathVariable("id") long id) {
-        return convertToAccessoryDTO(accessoryService.readOneAccessory(id));
+    @GetMapping("brand/{id}")
+    public BrandDTO getBrand(@PathVariable("id") long id) {
+        return convertToBrandDTO(brandService.readOneBrand(id));
     }
 
-    @PostMapping("accessory/create")
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid AccessoryDTO accessoryDTO,
+    @PostMapping("brand/create")
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid BrandDTO brandDTO,
                                              BindingResult bindingResult) {
         ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
-        accessoryService.create(convertToAccessory(accessoryDTO));
+        brandService.create(convertToBrand(brandDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("accessory/update/{id}")
-    public void update(@PathVariable("id") long id, @RequestBody @Valid AccessoryDTO accessoryDTO,
+    @PatchMapping("brand/update/{id}")
+    public void update(@PathVariable("id") long id, @RequestBody @Valid BrandDTO brandDTO,
                        BindingResult bindingResult) {
         ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
-        accessoryService.update(convertToAccessory(accessoryDTO), id);
+        brandService.update(convertToBrand(brandDTO), id);
     }
 
-    @DeleteMapping("accessory/delete/{id}")
+    @DeleteMapping("brand/delete/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
-        accessoryService.delete(id);
+        brandService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    private Accessory convertToAccessory(AccessoryDTO accessoryDTO) {
-        return modelMapper.map(accessoryDTO, Accessory.class);
+    private Brand convertToBrand(BrandDTO brandDTO) {
+        return modelMapper.map(brandDTO, Brand.class);
     }
 
-    private AccessoryDTO convertToAccessoryDTO(Accessory accessory) {
-        return modelMapper.map(accessory, AccessoryDTO.class);
+    private BrandDTO convertToBrandDTO(Brand brand) {
+        return modelMapper.map(brand, BrandDTO.class);
     }
 }

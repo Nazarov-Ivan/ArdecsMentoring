@@ -3,6 +3,7 @@ package com.ardecs.carconfiguration.dto;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 /**
@@ -11,17 +12,12 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class AccessoryDTO {
+public class BrandDTO {
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
     private String name;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Null
+    private Long id;
 }

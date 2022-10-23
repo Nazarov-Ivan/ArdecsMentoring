@@ -1,8 +1,8 @@
 package com.ardecs.carconfiguration.controllers;
 
-import com.ardecs.carconfiguration.dto.AccessoryDTO;
-import com.ardecs.carconfiguration.models.entities.Accessory;
-import com.ardecs.carconfiguration.services.AccessoryService;
+import com.ardecs.carconfiguration.dto.EngineDTO;
+import com.ardecs.carconfiguration.models.entities.Engine;
+import com.ardecs.carconfiguration.services.EngineService;
 import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -26,53 +26,52 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping()
-public class AccessoryController {
-
-    private final AccessoryService accessoryService;
+public class EngineController {
+    private final EngineService engineService;
     private final ModelMapper modelMapper;
 
-    public AccessoryController(AccessoryService accessoryService, ModelMapper modelMapper) {
-        this.accessoryService = accessoryService;
+    public EngineController(EngineService engineService, ModelMapper modelMapper) {
+        this.engineService = engineService;
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/accessories")
-    public List<AccessoryDTO> getAccessories() {
-        return accessoryService.readAllAccessories().stream().map(this::convertToAccessoryDTO)
+    @GetMapping("/engines")
+    public List<EngineDTO> getEngines() {
+        return engineService.readAllEngines().stream().map(this::convertToEngineDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("accessory/{id}")
-    public AccessoryDTO getAccessory(@PathVariable("id") long id) {
-        return convertToAccessoryDTO(accessoryService.readOneAccessory(id));
+    @GetMapping("/engine/{id}")
+    public EngineDTO getEngine(@PathVariable("id") long id) {
+        return convertToEngineDTO(engineService.readOneEngine(id));
     }
 
-    @PostMapping("accessory/create")
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid AccessoryDTO accessoryDTO,
+    @PostMapping("/engine/create")
+    public ResponseEntity<HttpStatus> create(@RequestBody @Valid EngineDTO engineDTO,
                                              BindingResult bindingResult) {
         ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
-        accessoryService.create(convertToAccessory(accessoryDTO));
+        engineService.create(convertToEngine(engineDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("accessory/update/{id}")
-    public void update(@PathVariable("id") long id, @RequestBody @Valid AccessoryDTO accessoryDTO,
+    @PatchMapping("/engine/update/{id}")
+    public void update(@PathVariable("id") long id, @RequestBody @Valid EngineDTO engineDTO,
                        BindingResult bindingResult) {
         ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
-        accessoryService.update(convertToAccessory(accessoryDTO), id);
+        engineService.update(convertToEngine(engineDTO), id);
     }
 
-    @DeleteMapping("accessory/delete/{id}")
+    @DeleteMapping("/engine/delete/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
-        accessoryService.delete(id);
+        engineService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    private Accessory convertToAccessory(AccessoryDTO accessoryDTO) {
-        return modelMapper.map(accessoryDTO, Accessory.class);
+    private Engine convertToEngine(EngineDTO engineDTO) {
+        return modelMapper.map(engineDTO, Engine.class);
     }
 
-    private AccessoryDTO convertToAccessoryDTO(Accessory accessory) {
-        return modelMapper.map(accessory, AccessoryDTO.class);
+    private EngineDTO convertToEngineDTO(Engine engine) {
+        return modelMapper.map(engine, EngineDTO.class);
     }
 }

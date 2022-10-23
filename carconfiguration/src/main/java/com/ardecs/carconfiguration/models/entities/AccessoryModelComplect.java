@@ -1,6 +1,15 @@
 package com.ardecs.carconfiguration.models.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -44,9 +53,11 @@ public class AccessoryModelComplect {
     public void setModelComplectationAccessory(ModelComplectation modelComplectation) {
         this.modelComplectationAccessory = modelComplectation;
     }
+
     public Accessory getAccessory() {
         return accessory;
     }
+
     public void setAccessory(Accessory access) {
         this.accessory = access;
     }

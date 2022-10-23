@@ -11,17 +11,11 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class AccessoryDTO {
-    @NotEmpty(message = "Name should not be empty")
+public class TransmissionDTO {
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
+    @NotEmpty(message = "Name should not be empty")
     private String name;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String description;
 }

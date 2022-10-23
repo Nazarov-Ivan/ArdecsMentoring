@@ -33,7 +33,7 @@ public class Engine {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
+    @NotNull(message = "Power should not be empty")
     @Column(name = "power", nullable = false)
     private Integer power;
 

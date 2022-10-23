@@ -1,12 +1,10 @@
 package com.ardecs.carconfiguration.models.entities;
 
 import org.hibernate.Hibernate;
-
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
-
 
 @Embeddable
 public class ModelComplectationId implements Serializable {
@@ -35,11 +33,14 @@ public class ModelComplectationId implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+
+        if (this == o) {return true;}
+
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {return false;}
+
         ModelComplectationId entity = (ModelComplectationId) o;
-        return Objects.equals(this.modelId, entity.modelId) &&
-                Objects.equals(this.compId, entity.compId);
+        return Objects.equals(this.modelId, entity.modelId)
+                && Objects.equals(this.compId, entity.compId);
     }
 
     @Override

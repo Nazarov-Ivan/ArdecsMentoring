@@ -21,7 +21,7 @@ public class Color {
     private Long id;
 
     @Size(min = 2, max = 35, message = "Name should be between "
-            + "2 and 50 characters")
+            + "2 and 35 characters")
     @NotEmpty(message = "Name should not be empty")
     @Column(name = "name", nullable = false)
     private String name;
