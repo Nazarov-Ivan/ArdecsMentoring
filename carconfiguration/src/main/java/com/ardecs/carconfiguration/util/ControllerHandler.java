@@ -1,8 +1,8 @@
 package com.ardecs.carconfiguration.util;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -11,39 +11,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
  @RestControllerAdvice
 public class ControllerHandler {
+ @ResponseStatus(HttpStatus.NOT_FOUND)
  @ExceptionHandler
- private ResponseEntity<ResourceErrorResponse> handleException(ResourceNotFoundIdException e) {
-  ResourceErrorResponse response = new ResourceErrorResponse(
-          e.getMessage() + " with this ID wasn't found!",
-          System.currentTimeMillis()
-  );
-  return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+ private ResourceErrorResponse handleException(ResourceNotFoundIdException e) {
+  return new ResourceErrorResponse(e.getMessage() + " with this ID wasn't found!",
+          System.currentTimeMillis());
  }
 
+ @ResponseStatus(HttpStatus.NOT_FOUND)
  @ExceptionHandler
- private ResponseEntity<ResourceErrorResponse> handleException(ResourceNotFoundNameException e) {
-  ResourceErrorResponse response = new ResourceErrorResponse(
-          e.getMessage() + " with this NAME wasn't found!",
-          System.currentTimeMillis()
-  );
-  return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+ private ResourceErrorResponse handleException(ResourceNotFoundNameException e) {
+  return new ResourceErrorResponse(e.getMessage() + " with this NAME wasn't found!",
+          System.currentTimeMillis());
  }
 
+ @ResponseStatus(HttpStatus.CONFLICT)
  @ExceptionHandler
- private ResponseEntity<ResourceErrorResponse> handleException(DuplicateNameException e) {
-  ResourceErrorResponse response = new ResourceErrorResponse(
-          e.getMessage() + " with this NAME has already exists!",
-          System.currentTimeMillis()
-  );
-  return new ResponseEntity<>(response, HttpStatus.FOUND);
+ private ResourceErrorResponse handleException(DuplicateNameException e) {
+  return new ResourceErrorResponse(e.getMessage() + " with this NAME has already exists!",
+          System.currentTimeMillis());
  }
 
+ @ResponseStatus(HttpStatus.BAD_REQUEST)
  @ExceptionHandler
- private ResponseEntity<ResourceErrorResponse> handleException(ResourceNotCreatedException e) {
-  ResourceErrorResponse response = new ResourceErrorResponse(
-          e.getMessage(),
-          System.currentTimeMillis()
-  );
-  return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+ private ResourceErrorResponse handleException(ResourceNotCreatedException e) {
+  return new ResourceErrorResponse(e.getMessage(), System.currentTimeMillis());
  }
 }

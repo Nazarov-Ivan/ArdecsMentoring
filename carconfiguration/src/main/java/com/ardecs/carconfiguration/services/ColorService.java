@@ -2,6 +2,7 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Color;
 import com.ardecs.carconfiguration.repositories.ColorRepository;
+import com.ardecs.carconfiguration.util.DuplicateNameException;
 import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -31,22 +32,22 @@ public class ColorService {
     }
 
     @Transactional
-    public void create(Color accessory) {
-        colorRepository.save(accessory);
+    public void create(Color color) {
+        if (colorRepository.findByName(color.getName()).isPresent()){
+            throw new DuplicateNameException(message);
+        } else colorRepository.save(color);
     }
 
     @Transactional
     public void update(Color color, long id) {
-        if (colorRepository.existsById(id)) {
-            color.setId(id);
-            colorRepository.save(color);
-        } else throw new ResourceNotFoundIdException(message);
+        colorRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        color.setId(id);
+        colorRepository.save(color);
     }
 
     @Transactional
     public void delete(long id) {
-        if (colorRepository.existsById(id)) {
-            colorRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+        colorRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        colorRepository.deleteById(id);
     }
 }

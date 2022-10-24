@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.EngineDTO;
 import com.ardecs.carconfiguration.models.entities.Engine;
 import com.ardecs.carconfiguration.services.EngineService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,43 +26,39 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/engine")
+@RequiredArgsConstructor
 public class EngineController {
     private final EngineService engineService;
     private final ModelMapper modelMapper;
 
-    public EngineController(EngineService engineService, ModelMapper modelMapper) {
-        this.engineService = engineService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/engines")
+    @GetMapping()
     public List<EngineDTO> getEngines() {
         return engineService.readAllEngines().stream().map(this::convertToEngineDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/engine/{id}")
+    @GetMapping("/{id}")
     public EngineDTO getEngine(@PathVariable("id") long id) {
         return convertToEngineDTO(engineService.readOneEngine(id));
     }
 
-    @PostMapping("/engine/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid EngineDTO engineDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         engineService.create(convertToEngine(engineDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/engine/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid EngineDTO engineDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         engineService.update(convertToEngine(engineDTO), id);
     }
 
-    @DeleteMapping("/engine/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         engineService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);

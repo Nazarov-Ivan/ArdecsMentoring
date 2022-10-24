@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.BrandDTO;
 import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.services.BrandService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,43 +26,39 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/brand")
+@RequiredArgsConstructor
 public class BrandController {
     private final BrandService brandService;
     private final ModelMapper modelMapper;
 
-    public BrandController(BrandService brandService, ModelMapper modelMapper) {
-        this.brandService = brandService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/brands")
+    @GetMapping()
     public List<BrandDTO> getBrands() {
         return brandService.readAllBrands().stream().map(this::convertToBrandDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("brand/{id}")
+    @GetMapping("/{id}")
     public BrandDTO getBrand(@PathVariable("id") long id) {
         return convertToBrandDTO(brandService.readOneBrand(id));
     }
 
-    @PostMapping("brand/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid BrandDTO brandDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         brandService.create(convertToBrand(brandDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("brand/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid BrandDTO brandDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         brandService.update(convertToBrand(brandDTO), id);
     }
 
-    @DeleteMapping("brand/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         brandService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);

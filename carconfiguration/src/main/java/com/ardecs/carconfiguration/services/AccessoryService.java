@@ -2,6 +2,7 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Accessory;
 import com.ardecs.carconfiguration.repositories.AccessoryRepository;
+import com.ardecs.carconfiguration.util.DuplicateNameException;
 import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -32,21 +33,21 @@ public class AccessoryService {
 
     @Transactional
     public void create(Accessory accessory) {
-        accessoryRepository.save(accessory);
+        if (accessoryRepository.findByName(accessory.getName()).isPresent()){
+            throw new DuplicateNameException(message);
+        } else accessoryRepository.save(accessory);
     }
 
     @Transactional
     public void update(Accessory accessory, long id) {
-        if (accessoryRepository.existsById(id)) {
-            accessory.setId(id);
-            accessoryRepository.save(accessory);
-        } else throw new ResourceNotFoundIdException(message);
+        accessoryRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        accessory.setId(id);
+        accessoryRepository.save(accessory);
     }
 
     @Transactional
     public void delete(long id) {
-        if (accessoryRepository.existsById(id)) {
-            accessoryRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+        accessoryRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        accessoryRepository.deleteById(id);
     }
 }

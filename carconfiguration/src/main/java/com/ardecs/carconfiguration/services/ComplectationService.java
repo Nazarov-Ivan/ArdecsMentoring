@@ -2,6 +2,7 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Complectation;
 import com.ardecs.carconfiguration.repositories.ComplectationRepository;
+import com.ardecs.carconfiguration.util.DuplicateNameException;
 import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -31,21 +32,21 @@ public class ComplectationService {
 
     @Transactional
     public void create(Complectation complectation) {
-        complectationRepository.save(complectation);
+        if (complectationRepository.findByName(complectation.getName()).isPresent()){
+            throw new DuplicateNameException(message);
+        } else complectationRepository.save(complectation);
     }
 
     @Transactional
     public void update(Complectation complectation, long id) {
-        if (complectationRepository.existsById(id)) {
-            complectation.setId(id);
-            complectationRepository.save(complectation);
-        } else throw new ResourceNotFoundIdException(message);
+        complectationRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        complectation.setId(id);
+        complectationRepository.save(complectation);
     }
 
     @Transactional
     public void delete(long id) {
-        if (complectationRepository.existsById(id)) {
-            complectationRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+        complectationRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        complectationRepository.deleteById(id);
     }
 }

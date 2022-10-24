@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.ColorDTO;
 import com.ardecs.carconfiguration.models.entities.Color;
 import com.ardecs.carconfiguration.services.ColorService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,43 +26,39 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/color")
+@RequiredArgsConstructor
 public class ColorController {
     private final ColorService colorService;
     private final ModelMapper modelMapper;
 
-    public ColorController(ColorService colorService, ModelMapper modelMapper) {
-        this.colorService = colorService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/colors")
+    @GetMapping()
     public List<ColorDTO> getColors() {
         return colorService.readAllColors().stream().map(this::convertToColorDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/color/{id}")
+    @GetMapping("/{id}")
     public ColorDTO getColor(@PathVariable("id") long id) {
         return convertToColorDTO(colorService.readOneColor(id));
     }
 
-    @PostMapping("/color/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid ColorDTO colorDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         colorService.create(convertToColor(colorDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/color/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid ColorDTO colorDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         colorService.update(convertToColor(colorDTO), id);
     }
 
-    @DeleteMapping("/color/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         colorService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Transmission;
 import com.ardecs.carconfiguration.repositories.TransmissionRepository;
+import com.ardecs.carconfiguration.util.DuplicateNameException;
 import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -31,21 +32,21 @@ public class TransmissionService {
 
     @Transactional
     public void create(Transmission transmission) {
-        transmissionRepository.save(transmission);
+        if (transmissionRepository.findByName(transmission.getName()).isPresent()) {
+            throw new DuplicateNameException(message);
+        } else transmissionRepository.save(transmission);
     }
 
     @Transactional
     public void update(Transmission accessory, long id) {
-        if (transmissionRepository.existsById(id)) {
-            accessory.setId(id);
-            transmissionRepository.save(accessory);
-        } else throw new ResourceNotFoundIdException(message);
+        transmissionRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        accessory.setId(id);
+        transmissionRepository.save(accessory);
     }
 
     @Transactional
     public void delete(long id) {
-        if (transmissionRepository.existsById(id)) {
-            transmissionRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+        transmissionRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        transmissionRepository.deleteById(id);
     }
 }

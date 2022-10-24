@@ -26,11 +26,13 @@ public class ModelService {
         this.brandService = brandService;
     }
 
-    public List<Model> readAllModels() {
+    public List<Model> readAllModels(long brandId) {
+        brandService.readOneBrand(brandId);
         return modelRepository.findAll();
     }
 
-    public Model readOneModel(long id) {
+    public Model readOneModel(long id, long brandId) {
+        brandService.readOneBrand(brandId);
         return modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
     }
 
@@ -43,18 +45,18 @@ public class ModelService {
     }
 
     @Transactional
-    public void update(Model model, long id) {
-        if (modelRepository.existsById(id)) {
-            model.setId(id);
-            modelRepository.save(model);
-        } else throw new ResourceNotFoundIdException(message);
+    public void update(Model model, long id, long brandId) {
+        brandService.readOneBrand(brandId);
+        modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        model.setId(id);
+        modelRepository.save(model);
     }
 
     @Transactional
-    public void delete(long id) {
-        if (modelRepository.existsById(id)) {
-            modelRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+    public void delete(long id, long brandId) {
+        brandService.readOneBrand(brandId);
+        modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        modelRepository.deleteById(id);
     }
 
     public Model findByName(String name) {

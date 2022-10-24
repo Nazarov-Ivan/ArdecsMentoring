@@ -4,7 +4,8 @@ import com.ardecs.carconfiguration.dto.ModelDTO;
 import com.ardecs.carconfiguration.models.entities.Model;
 import com.ardecs.carconfiguration.services.BrandService;
 import com.ardecs.carconfiguration.services.ModelService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,54 +27,45 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/model/{brandId}")
+@RequiredArgsConstructor
 public class ModelController {
     private final ModelService modelService;
     private final BrandService brandService;
     private final ModelMapper modelMapper;
 
-    public ModelController(ModelService modelService, BrandService brandService, ModelMapper modelMapper) {
-        this.modelService = modelService;
-        this.brandService = brandService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/models/{brandId}")
-    public List<ModelDTO> getModels(@PathVariable("brandId") long id) {
-        brandService.readOneBrand(id);
-        return modelService.readAllModels().stream().map(this::convertToModelDTO)
+    @GetMapping()
+    public List<ModelDTO> getModels(@PathVariable("brandId") long brandId) {
+        return modelService.readAllModels(brandId).stream().map(this::convertToModelDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/model/{brandId}/{id}")
+    @GetMapping("/{id}")
     public ModelDTO getModel(@PathVariable("id") long id,
                              @PathVariable("brandId") long brandId) {
-        brandService.readOneBrand(brandId);
-        return convertToModelDTO(modelService.readOneModel(id));
+        return convertToModelDTO(modelService.readOneModel(id, brandId));
     }
 
-    @PostMapping("/models/{brandId}/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@PathVariable("brandId") long brandId,
                                              @RequestBody @Valid ModelDTO modelDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         modelService.create(convertToModel(modelDTO), brandId);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/model/{brandId}/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @PathVariable("brandId") long brandId,
                        @RequestBody @Valid ModelDTO modelDTO, BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
-        brandService.readOneBrand(brandId);
-        modelService.update(convertToModel(modelDTO), brandId);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
+        modelService.update(convertToModel(modelDTO), id, brandId);
     }
 
-    @DeleteMapping("/model/{brandId}/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id,
                                              @PathVariable("brandId") long brandId) {
-        brandService.readOneBrand(brandId);
-        modelService.delete(id);
+        modelService.delete(id, brandId);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

@@ -3,7 +3,6 @@ package com.ardecs.carconfiguration.services;
 import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.repositories.BrandRepository;
 import com.ardecs.carconfiguration.util.DuplicateNameException;
-import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -41,17 +40,15 @@ public class BrandService {
 
     @Transactional
     public void update(Brand brand, long id) {
-        if (brandRepository.existsById(id)) {
-            brand.setId(id);
-            brandRepository.save(brand);
-        } else throw new ResourceNotFoundIdException(message);
+        brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        brand.setId(id);
+        brandRepository.save(brand);
     }
 
     @Transactional
     public void delete(long id) {
-        if (brandRepository.existsById(id)) {
-            brandRepository.deleteById(id);
-        } else throw new ResourceNotFoundIdException(message);
+        brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        brandRepository.deleteById(id);
     }
 
     public Brand findByName(String name) {

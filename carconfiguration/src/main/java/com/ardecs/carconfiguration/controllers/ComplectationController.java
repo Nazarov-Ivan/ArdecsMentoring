@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.ComplectationDTO;
 import com.ardecs.carconfiguration.models.entities.Complectation;
 import com.ardecs.carconfiguration.services.ComplectationService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,43 +26,39 @@ import java.util.stream.Collectors;
  * @date 10/23/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/complectation")
+@RequiredArgsConstructor
 public class ComplectationController {
     private final ComplectationService complectationService;
     private final ModelMapper modelMapper;
 
-    public ComplectationController(ComplectationService complectationService, ModelMapper modelMapper) {
-        this.complectationService = complectationService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/complectations")
+    @GetMapping()
     public List<ComplectationDTO> getColors() {
         return complectationService.readAllComplectations().stream().map(this::convertToComplectationDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/complectation/{id}")
+    @GetMapping("/{id}")
     public ComplectationDTO getColor(@PathVariable("id") long id) {
         return convertToComplectationDTO(complectationService.readOneComplectation(id));
     }
 
-    @PostMapping("/complectation/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid ComplectationDTO complectationDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         complectationService.create(convertToComplectation(complectationDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/complectation/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid ComplectationDTO complectationDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         complectationService.update(convertToComplectation(complectationDTO), id);
     }
 
-    @DeleteMapping("/complectation/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         complectationService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);

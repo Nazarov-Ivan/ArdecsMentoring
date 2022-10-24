@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.AccessoryDTO;
 import com.ardecs.carconfiguration.models.entities.Accessory;
 import com.ardecs.carconfiguration.services.AccessoryService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,44 +26,40 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/accessory")
+@RequiredArgsConstructor
 public class AccessoryController {
 
     private final AccessoryService accessoryService;
     private final ModelMapper modelMapper;
 
-    public AccessoryController(AccessoryService accessoryService, ModelMapper modelMapper) {
-        this.accessoryService = accessoryService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/accessories")
+    @GetMapping()
     public List<AccessoryDTO> getAccessories() {
         return accessoryService.readAllAccessories().stream().map(this::convertToAccessoryDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("accessory/{id}")
+    @GetMapping("/{id}")
     public AccessoryDTO getAccessory(@PathVariable("id") long id) {
         return convertToAccessoryDTO(accessoryService.readOneAccessory(id));
     }
 
-    @PostMapping("accessory/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid AccessoryDTO accessoryDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         accessoryService.create(convertToAccessory(accessoryDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("accessory/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid AccessoryDTO accessoryDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         accessoryService.update(convertToAccessory(accessoryDTO), id);
     }
 
-    @DeleteMapping("accessory/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         accessoryService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);

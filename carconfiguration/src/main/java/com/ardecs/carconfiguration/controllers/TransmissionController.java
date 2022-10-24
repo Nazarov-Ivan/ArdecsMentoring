@@ -3,7 +3,8 @@ package com.ardecs.carconfiguration.controllers;
 import com.ardecs.carconfiguration.dto.TransmissionDTO;
 import com.ardecs.carconfiguration.models.entities.Transmission;
 import com.ardecs.carconfiguration.services.TransmissionService;
-import com.ardecs.carconfiguration.util.ResourceNotCreatedException;
+import com.ardecs.carconfiguration.util.ValidationHelper;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,44 +26,40 @@ import java.util.stream.Collectors;
  * @date 10/22/2022
  */
 @RestController
-@RequestMapping()
+@RequestMapping("/transmission")
+@RequiredArgsConstructor
 public class TransmissionController {
 
     private final TransmissionService transmissionService;
     private final ModelMapper modelMapper;
 
-    public TransmissionController(TransmissionService transmissionService, ModelMapper modelMapper) {
-        this.transmissionService = transmissionService;
-        this.modelMapper = modelMapper;
-    }
-
-    @GetMapping("/transmissions")
+    @GetMapping()
     public List<TransmissionDTO> getAccessories() {
         return transmissionService.readAllTransmissions().stream().map(this::convertToTransmissionDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/transmission/{id}")
+    @GetMapping("/{id}")
     public TransmissionDTO getAccessory(@PathVariable("id") long id) {
         return convertToTransmissionDTO(transmissionService.readOneTransmission(id));
     }
 
-    @PostMapping("/transmission/create")
+    @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid TransmissionDTO transmissionDTO,
                                              BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         transmissionService.create(convertToTransmission(transmissionDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/transmission/update/{id}")
+    @PatchMapping("/{id}")
     public void update(@PathVariable("id") long id, @RequestBody @Valid TransmissionDTO transmissionDTO,
                        BindingResult bindingResult) {
-        ResourceNotCreatedException.checkingErrorsMethod(bindingResult);
+        ValidationHelper.checkingErrorsMethod(bindingResult);
         transmissionService.update(convertToTransmission(transmissionDTO), id);
     }
 
-    @DeleteMapping("/transmission/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
         transmissionService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
