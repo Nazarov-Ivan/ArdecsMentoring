@@ -1,6 +1,4 @@
-package com.ardecs.carconfiguration.util;
-
-import java.util.function.Consumer;
+package com.ardecs.carconfiguration.exceptions;
 
 /**
  * @author Nazarov Ivan

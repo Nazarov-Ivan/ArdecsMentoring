@@ -1,11 +1,10 @@
 package com.ardecs.carconfiguration.controllers;
 
 import com.ardecs.carconfiguration.dto.EngineDTO;
-import com.ardecs.carconfiguration.models.entities.Engine;
 import com.ardecs.carconfiguration.services.EngineService;
 import com.ardecs.carconfiguration.util.ValidationHelper;
+import com.ardecs.carconfiguration.util.mapper.EngineMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,24 +29,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EngineController {
     private final EngineService engineService;
-    private final ModelMapper modelMapper;
+    private final EngineMapper modelMapper;
 
     @GetMapping()
     public List<EngineDTO> getEngines() {
-        return engineService.readAllEngines().stream().map(this::convertToEngineDTO)
+        return engineService.readAllEngines().stream().map(modelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public EngineDTO getEngine(@PathVariable("id") long id) {
-        return convertToEngineDTO(engineService.readOneEngine(id));
+        return modelMapper.toDto(engineService.readOneEngine(id));
     }
 
     @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid EngineDTO engineDTO,
                                              BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        engineService.create(convertToEngine(engineDTO));
+        engineService.create(modelMapper.toEntity(engineDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -55,20 +54,12 @@ public class EngineController {
     public void update(@PathVariable("id") long id, @RequestBody @Valid EngineDTO engineDTO,
                        BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        engineService.update(convertToEngine(engineDTO), id);
+        engineService.update(modelMapper.toEntity(engineDTO), id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") long id) {
         engineService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Engine convertToEngine(EngineDTO engineDTO) {
-        return modelMapper.map(engineDTO, Engine.class);
-    }
-
-    private EngineDTO convertToEngineDTO(Engine engine) {
-        return modelMapper.map(engine, EngineDTO.class);
     }
 }

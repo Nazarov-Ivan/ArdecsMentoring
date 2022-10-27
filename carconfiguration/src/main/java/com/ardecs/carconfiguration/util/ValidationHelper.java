@@ -1,5 +1,6 @@
 package com.ardecs.carconfiguration.util;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotCreatedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import java.util.List;

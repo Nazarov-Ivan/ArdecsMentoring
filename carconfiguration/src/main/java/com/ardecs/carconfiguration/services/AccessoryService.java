@@ -2,12 +2,13 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Accessory;
 import com.ardecs.carconfiguration.repositories.AccessoryRepository;
-import com.ardecs.carconfiguration.util.DuplicateNameException;
-import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundIdException.resourceNotFoundIdException;
+
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -33,21 +34,25 @@ public class AccessoryService {
 
     @Transactional
     public void create(Accessory accessory) {
-        if (accessoryRepository.findByName(accessory.getName()).isPresent()){
+        if (accessoryRepository.findByName(accessory.getName()).isPresent()) {
             throw new DuplicateNameException(message);
         } else accessoryRepository.save(accessory);
     }
 
     @Transactional
     public void update(Accessory accessory, long id) {
-        accessoryRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
-        accessory.setId(id);
-        accessoryRepository.save(accessory);
+        Accessory oldAccessory = accessoryRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        oldAccessory.setName(accessory.getName());
+        accessoryRepository.save(oldAccessory);
     }
 
     @Transactional
     public void delete(long id) {
         accessoryRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
         accessoryRepository.deleteById(id);
+    }
+
+    public Accessory findByName(String name) {
+        return accessoryRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
     }
 }

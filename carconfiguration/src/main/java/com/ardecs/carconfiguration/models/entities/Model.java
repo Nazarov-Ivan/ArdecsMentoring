@@ -2,15 +2,12 @@ package com.ardecs.carconfiguration.models.entities;
 
 import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -18,7 +15,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "model")
-public class Model {
+public class Model extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -37,17 +34,6 @@ public class Model {
     @NotNull
     @Column(name = "price", nullable = false)
     private Integer price;
-
-    @OneToMany(mappedBy = "model")
-    private Set<ModelComplectation> modelComplectations = new LinkedHashSet<>();
-
-    public Set<ModelComplectation> getModelComplectations() {
-        return modelComplectations;
-    }
-
-    public void setModelComplectations(Set<ModelComplectation> modelComplectations) {
-        this.modelComplectations = modelComplectations;
-    }
 
     public Integer getPrice() {
         return price;

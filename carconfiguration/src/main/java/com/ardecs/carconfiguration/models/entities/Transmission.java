@@ -1,20 +1,17 @@
 package com.ardecs.carconfiguration.models.entities;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "transmissoin")
-public class Transmission {
+public class Transmission extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +26,6 @@ public class Transmission {
 
     @Column(name = "description")
     private String description;
-
-    @OneToMany(mappedBy = "trans")
-    private Set<TransModelComplect> transModelComplects = new LinkedHashSet<>();
-
-    public Set<TransModelComplect> getTransModelComplects() {
-        return transModelComplects;
-    }
-
-    public void setTransModelComplects(Set<TransModelComplect> transModelComplects) {
-        this.transModelComplects = transModelComplects;
-    }
 
     public String getDescription() {
         return description;

@@ -1,19 +1,18 @@
 package com.ardecs.carconfiguration.models.entities;
 
-import javax.persistence.FetchType;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 @Entity
 @Table(name = "model_complectation")
-public class ModelComplectation {
+public class ModelComplectation extends AbstractEntity {
 
     @EmbeddedId
     private ModelComplectationId id;
@@ -28,56 +27,56 @@ public class ModelComplectation {
     @JoinColumn(name = "comp_id", referencedColumnName = "id", nullable = false)
     private Complectation comp;
 
-    @OneToMany(mappedBy = "modelComplectationTrans")
-    private Set<TransModelComplect> transModelComplects = new LinkedHashSet<>();
+    @Transient
+    private EngineModelComplect engineModelComplect;
 
-    @OneToMany(mappedBy = "modelComplectationAccessory")
-    private Set<AccessoryModelComplect> accessoryModelComplects = new LinkedHashSet<>();
+    @Transient
+    private TransModelComplect transModelComplect;
 
-    @OneToMany(mappedBy = "modelComplectationColor")
-    private Set<ColorModelComplect> colorModelComplects = new LinkedHashSet<>();
+    @Transient
+    private List<AccessoryModelComplect> accessoryModelComplects;
 
-    @OneToMany(mappedBy = "modelComplectationEngine")
-    private Set<EngineModelComplect> engineModelComplects = new LinkedHashSet<>();
+    @Transient
+    private List<ColorModelComplect> colorModelComplects;
 
-    public Set<EngineModelComplect> getEngineModelComplects() {
-        return engineModelComplects;
+    public EngineModelComplect getEngineModelComplect() {
+        return engineModelComplect;
     }
 
-    public void setEngineModelComplects(Set<EngineModelComplect> engineModelComplects) {
-        this.engineModelComplects = engineModelComplects;
+    public void setEngineModelComplect(EngineModelComplect engineModelComplect) {
+        this.engineModelComplect = engineModelComplect;
     }
 
-    public Set<ColorModelComplect> getColorModelComplects() {
+    public List<ColorModelComplect> getColorModelComplects() {
         return colorModelComplects;
     }
 
-    public void setColorModelComplects(Set<ColorModelComplect> colorModelComplects) {
+    public void setColorModelComplects(List<ColorModelComplect> colorModelComplects) {
         this.colorModelComplects = colorModelComplects;
     }
 
-    public Set<AccessoryModelComplect> getAccessoryModelComplects() {
+    public List<AccessoryModelComplect> getAccessoryModelComplects() {
         return accessoryModelComplects;
     }
 
-    public void setAccessoryModelComplects(Set<AccessoryModelComplect> accessoryModelComplects) {
+    public void setAccessoryModelComplects(List<AccessoryModelComplect> accessoryModelComplects) {
         this.accessoryModelComplects = accessoryModelComplects;
     }
 
-    public Set<TransModelComplect> getTransModelComplects() {
-        return transModelComplects;
+    public TransModelComplect getTransModelComplect() {
+        return transModelComplect;
     }
 
-    public void setTransModelComplects(Set<TransModelComplect> transModelComplects) {
-        this.transModelComplects = transModelComplects;
+    public void setTransModelComplect(TransModelComplect transModelComplect) {
+        this.transModelComplect = transModelComplect;
     }
 
     public Complectation getComp() {
         return comp;
     }
 
-    public void setComp(Complectation comp) {
-        this.comp = comp;
+    public void setComp(Complectation complectation) {
+        this.comp = complectation;
     }
 
     public Model getModel() {

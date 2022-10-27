@@ -1,12 +1,10 @@
 package com.ardecs.carconfiguration.controllers;
 
 import com.ardecs.carconfiguration.dto.ModelDTO;
-import com.ardecs.carconfiguration.models.entities.Model;
-import com.ardecs.carconfiguration.services.BrandService;
 import com.ardecs.carconfiguration.services.ModelService;
 import com.ardecs.carconfiguration.util.ValidationHelper;
+import com.ardecs.carconfiguration.util.mapper.MyModelMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -31,19 +29,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ModelController {
     private final ModelService modelService;
-    private final BrandService brandService;
-    private final ModelMapper modelMapper;
+    private final MyModelMapper myModelMapper;
 
     @GetMapping()
     public List<ModelDTO> getModels(@PathVariable("brandId") long brandId) {
-        return modelService.readAllModels(brandId).stream().map(this::convertToModelDTO)
+        return modelService.readAllModels(brandId).stream().map(myModelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ModelDTO getModel(@PathVariable("id") long id,
                              @PathVariable("brandId") long brandId) {
-        return convertToModelDTO(modelService.readOneModel(id, brandId));
+        return myModelMapper.toDto(modelService.readOneModel(id, brandId));
     }
 
     @PostMapping()
@@ -51,7 +48,7 @@ public class ModelController {
                                              @RequestBody @Valid ModelDTO modelDTO,
                                              BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        modelService.create(convertToModel(modelDTO), brandId);
+        modelService.create(myModelMapper.toEntity(modelDTO), brandId);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -59,22 +56,13 @@ public class ModelController {
     public void update(@PathVariable("id") long id, @PathVariable("brandId") long brandId,
                        @RequestBody @Valid ModelDTO modelDTO, BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        modelService.update(convertToModel(modelDTO), id, brandId);
+        modelService.update(myModelMapper.toEntity(modelDTO), id, brandId);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id,
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") long id,
                                              @PathVariable("brandId") long brandId) {
         modelService.delete(id, brandId);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Model convertToModel(ModelDTO modelDTO) {
-        modelDTO.getBrand().setId(brandService.findByName(modelDTO.getBrand().getName()).getId());
-        return modelMapper.map(modelDTO, Model.class);
-    }
-
-    private ModelDTO convertToModelDTO(Model model) {
-        return modelMapper.map(model, ModelDTO.class);
     }
 }

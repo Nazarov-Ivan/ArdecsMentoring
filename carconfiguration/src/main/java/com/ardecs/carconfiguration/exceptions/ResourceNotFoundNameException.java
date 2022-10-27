@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.util;
+package com.ardecs.carconfiguration.exceptions;
 
 import java.util.function.Supplier;
 

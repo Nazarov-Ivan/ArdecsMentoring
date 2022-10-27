@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface AccessoryRepository extends JpaRepository<Accessory, Long> {
 
-    Optional<Accessory> findByName(String Name);
+    Optional<Accessory> findByName(String name);
 }

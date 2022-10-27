@@ -1,20 +1,17 @@
 package com.ardecs.carconfiguration.models.entities;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "Accessory")
-public class Accessory {
+public class Accessory extends AbstractEntity {
 
     @Id
     @Column(name = "id")
@@ -26,19 +23,6 @@ public class Accessory {
             + "2 and 50 characters")
     @Column(name = "name")
     private String name;
-
-    @OneToMany(mappedBy = "accessory")
-    private Set<AccessoryModelComplect> accessoryModelComplects
-            = new LinkedHashSet<>();
-
-    public Set<AccessoryModelComplect> getAccessoryModelComplects() {
-        return accessoryModelComplects;
-    }
-
-    public void setAccessoryModelComplects(
-           Set<AccessoryModelComplect> accessoryModelComplects) {
-        this.accessoryModelComplects = accessoryModelComplects;
-    }
 
     public Long getId() {
         return id;

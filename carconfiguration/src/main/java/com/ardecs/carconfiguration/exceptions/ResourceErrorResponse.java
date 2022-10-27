@@ -1,4 +1,4 @@
-package com.ardecs.carconfiguration.util;
+package com.ardecs.carconfiguration.exceptions;
 
 /**
  * @author Nazarov Ivan

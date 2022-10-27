@@ -1,11 +1,10 @@
 package com.ardecs.carconfiguration.controllers;
 
 import com.ardecs.carconfiguration.dto.TransmissionDTO;
-import com.ardecs.carconfiguration.models.entities.Transmission;
 import com.ardecs.carconfiguration.services.TransmissionService;
 import com.ardecs.carconfiguration.util.ValidationHelper;
+import com.ardecs.carconfiguration.util.mapper.TransmissionMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -31,24 +30,24 @@ import java.util.stream.Collectors;
 public class TransmissionController {
 
     private final TransmissionService transmissionService;
-    private final ModelMapper modelMapper;
+    private final TransmissionMapper modelMapper;
 
     @GetMapping()
     public List<TransmissionDTO> getAccessories() {
-        return transmissionService.readAllTransmissions().stream().map(this::convertToTransmissionDTO)
+        return transmissionService.readAllTransmissions().stream().map(modelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public TransmissionDTO getAccessory(@PathVariable("id") long id) {
-        return convertToTransmissionDTO(transmissionService.readOneTransmission(id));
+        return modelMapper.toDto(transmissionService.readOneTransmission(id));
     }
 
     @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid TransmissionDTO transmissionDTO,
                                              BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        transmissionService.create(convertToTransmission(transmissionDTO));
+        transmissionService.create(modelMapper.toEntity(transmissionDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -56,20 +55,12 @@ public class TransmissionController {
     public void update(@PathVariable("id") long id, @RequestBody @Valid TransmissionDTO transmissionDTO,
                        BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        transmissionService.update(convertToTransmission(transmissionDTO), id);
+        transmissionService.update(modelMapper.toEntity(transmissionDTO), id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") long id) {
         transmissionService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Transmission convertToTransmission(TransmissionDTO transmissionDTO) {
-        return modelMapper.map(transmissionDTO, Transmission.class);
-    }
-
-    private TransmissionDTO convertToTransmissionDTO(Transmission transmission) {
-        return modelMapper.map(transmission, TransmissionDTO.class);
     }
 }

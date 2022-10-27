@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "engine_model_complect")
-public class EngineModelComplect {
+public class EngineModelComplect extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "engine_id")
     private Engine engine;
@@ -28,7 +28,7 @@ public class EngineModelComplect {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns({
             @JoinColumn(name = "model_id", referencedColumnName = "model_id"),
             @JoinColumn(name = "comp_id", referencedColumnName = "comp_id")
@@ -42,6 +42,7 @@ public class EngineModelComplect {
     public void setPrice(Integer price) {
         this.price = price;
     }
+
 
     public ModelComplectation getModelComplectationEngine() {
         return modelComplectationEngine;

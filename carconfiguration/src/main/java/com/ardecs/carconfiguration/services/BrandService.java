@@ -2,12 +2,13 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.repositories.BrandRepository;
-import com.ardecs.carconfiguration.util.DuplicateNameException;
+import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundNameException.resourceNotFoundNameException;
+
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -40,9 +41,9 @@ public class BrandService {
 
     @Transactional
     public void update(Brand brand, long id) {
-        brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
-        brand.setId(id);
-        brandRepository.save(brand);
+        Brand oldBrand = brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        oldBrand.setName(brand.getName());
+        brandRepository.save(oldBrand);
     }
 
     @Transactional

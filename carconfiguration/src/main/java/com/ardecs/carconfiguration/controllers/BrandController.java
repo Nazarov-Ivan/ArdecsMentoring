@@ -1,11 +1,10 @@
 package com.ardecs.carconfiguration.controllers;
 
 import com.ardecs.carconfiguration.dto.BrandDTO;
-import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.services.BrandService;
 import com.ardecs.carconfiguration.util.ValidationHelper;
+import com.ardecs.carconfiguration.util.mapper.BrandMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,24 +29,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BrandController {
     private final BrandService brandService;
-    private final ModelMapper modelMapper;
+    private final BrandMapper modelMapper;
 
     @GetMapping()
     public List<BrandDTO> getBrands() {
-        return brandService.readAllBrands().stream().map(this::convertToBrandDTO)
+        return brandService.readAllBrands().stream().map(modelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public BrandDTO getBrand(@PathVariable("id") long id) {
-        return convertToBrandDTO(brandService.readOneBrand(id));
+        return modelMapper.toDto(brandService.readOneBrand(id));
     }
 
     @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid BrandDTO brandDTO,
                                              BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        brandService.create(convertToBrand(brandDTO));
+        brandService.create(modelMapper.toEntity(brandDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -55,20 +54,12 @@ public class BrandController {
     public void update(@PathVariable("id") long id, @RequestBody @Valid BrandDTO brandDTO,
                        BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        brandService.update(convertToBrand(brandDTO), id);
+        brandService.update(modelMapper.toEntity(brandDTO), id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") long id) {
         brandService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Brand convertToBrand(BrandDTO brandDTO) {
-        return modelMapper.map(brandDTO, Brand.class);
-    }
-
-    private BrandDTO convertToBrandDTO(Brand brand) {
-        return modelMapper.map(brand, BrandDTO.class);
     }
 }

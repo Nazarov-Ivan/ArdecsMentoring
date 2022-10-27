@@ -1,14 +1,15 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
 import com.ardecs.carconfiguration.models.entities.Model;
 import com.ardecs.carconfiguration.repositories.ModelRepository;
-import com.ardecs.carconfiguration.util.DuplicateNameException;
-import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundNameException.resourceNotFoundNameException;
+
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -27,8 +28,10 @@ public class ModelService {
     }
 
     public List<Model> readAllModels(long brandId) {
-        brandService.readOneBrand(brandId);
-        return modelRepository.findAll();
+        List<Model> models = modelRepository.findAllByBrand(brandService.readOneBrand(brandId));
+        if (models.isEmpty()) {
+            throw new ResourceNotFoundIdException("Models in brand");
+        } else return models;
     }
 
     public Model readOneModel(long id, long brandId) {
@@ -47,9 +50,11 @@ public class ModelService {
     @Transactional
     public void update(Model model, long id, long brandId) {
         brandService.readOneBrand(brandId);
-        modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
-        model.setId(id);
-        modelRepository.save(model);
+        Model oldModel = modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        oldModel.setBrand(model.getBrand());
+        oldModel.setPrice(model.getPrice());
+        oldModel.setName(model.getName());
+        modelRepository.save(oldModel);
     }
 
     @Transactional

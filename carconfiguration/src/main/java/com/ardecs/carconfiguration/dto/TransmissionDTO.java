@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class TransmissionDTO {
+public class TransmissionDTO extends AbstractDTO {
     @Size(min = 2, max = 50, message = "Name should be between "
             + "2 and 50 characters")
     @NotEmpty(message = "Name should not be empty")

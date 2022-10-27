@@ -1,11 +1,10 @@
 package com.ardecs.carconfiguration.controllers;
 
 import com.ardecs.carconfiguration.dto.ColorDTO;
-import com.ardecs.carconfiguration.models.entities.Color;
 import com.ardecs.carconfiguration.services.ColorService;
 import com.ardecs.carconfiguration.util.ValidationHelper;
+import com.ardecs.carconfiguration.util.mapper.ColorMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,24 +29,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ColorController {
     private final ColorService colorService;
-    private final ModelMapper modelMapper;
+    private final ColorMapper modelMapper;
 
     @GetMapping()
     public List<ColorDTO> getColors() {
-        return colorService.readAllColors().stream().map(this::convertToColorDTO)
+        return colorService.readAllColors().stream().map(modelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ColorDTO getColor(@PathVariable("id") long id) {
-        return convertToColorDTO(colorService.readOneColor(id));
+        return modelMapper.toDto(colorService.readOneColor(id));
     }
 
     @PostMapping()
     public ResponseEntity<HttpStatus> create(@RequestBody @Valid ColorDTO colorDTO,
                                              BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        colorService.create(convertToColor(colorDTO));
+        colorService.create(modelMapper.toEntity(colorDTO));
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -55,20 +54,12 @@ public class ColorController {
     public void update(@PathVariable("id") long id, @RequestBody @Valid ColorDTO colorDTO,
                        BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        colorService.update(convertToColor(colorDTO), id);
+        colorService.update(modelMapper.toEntity(colorDTO), id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") long id) {
         colorService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private Color convertToColor(ColorDTO colorDTO) {
-        return modelMapper.map(colorDTO, Color.class);
-    }
-
-    private ColorDTO convertToColorDTO(Color color) {
-        return modelMapper.map(color, ColorDTO.class);
     }
 }

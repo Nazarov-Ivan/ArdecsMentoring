@@ -2,12 +2,13 @@ package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.models.entities.Engine;
 import com.ardecs.carconfiguration.repositories.EngineRepository;
-import com.ardecs.carconfiguration.util.DuplicateNameException;
-import com.ardecs.carconfiguration.util.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-import static com.ardecs.carconfiguration.util.ResourceNotFoundIdException.resourceNotFoundIdException;
+
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
+import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -39,14 +40,20 @@ public class EngineService {
 
     @Transactional
     public void update(Engine engine, long id) {
-        engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
-        engine.setId(id);
-        engineRepository.save(engine);
+        Engine oldEngine = engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        oldEngine.setName(engine.getName());
+        oldEngine.setDescription(engine.getDescription());
+        oldEngine.setPower(engine.getPower());
+        engineRepository.save(oldEngine);
     }
 
     @Transactional
     public void delete(long id) {
         engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
         engineRepository.deleteById(id);
+    }
+
+    public Engine findByName(String name) {
+        return engineRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
     }
 }
