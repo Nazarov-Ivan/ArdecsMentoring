@@ -1,5 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException;
 import com.ardecs.carconfiguration.models.entities.Transmission;
 import com.ardecs.carconfiguration.repositories.TransmissionRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
@@ -7,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -26,7 +25,7 @@ public class TransmissionService {
     }
 
     public Transmission readOneTransmission(long id) {
-        return transmissionRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        return transmissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 
     @Transactional
@@ -38,7 +37,8 @@ public class TransmissionService {
 
     @Transactional
     public void update(Transmission transmission, long id) {
-        Transmission oldTransmission = transmissionRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        Transmission oldTransmission = transmissionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundIdException(message));
         oldTransmission.setName(transmission.getName());
         oldTransmission.setDescription(transmission.getDescription());
         transmissionRepository.save(oldTransmission);
@@ -46,11 +46,11 @@ public class TransmissionService {
 
     @Transactional
     public void delete(long id) {
-        transmissionRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        transmissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         transmissionRepository.deleteById(id);
     }
 
     public Transmission findByName(String name) {
-        return transmissionRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
+        return transmissionRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundNameException(message));
     }
 }

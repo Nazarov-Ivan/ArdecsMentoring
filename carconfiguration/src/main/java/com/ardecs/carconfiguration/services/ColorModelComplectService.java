@@ -1,6 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.exceptions.DuplicateModelComplectException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
 import com.ardecs.carconfiguration.models.entities.ColorModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.repositories.ColorModelComplectRepository;
@@ -10,7 +11,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -24,50 +24,47 @@ public class ColorModelComplectService {
     private final ServicesHelper servicesHelper;
 
     @Transactional
-    public void create(Long colorId, Long modelId, Long compId, int price) {
+    public void create(ColorModelComplect colorModelComplect, Long modelId, Long compId) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        createInModelComplectation(colorId, modelId, compId, price, modelComplectation);
+        createInModelComplectation(colorModelComplect, modelComplectation);
     }
 
     @Transactional
-    public void createInModelComplectation(Long colorId, Long modelId, Long compId, int price,
-                                           ModelComplectation modelComplectation) {
-        if (colorModelComplectRepository.findByColorIdAndModelComplectationColor(colorId, modelComplectation).isPresent()) {
+    public void createInModelComplectation(ColorModelComplect colorModelComplect, ModelComplectation modelComplectation) {
+        if (colorModelComplectRepository.findByColorIdAndModelComplectationColor(colorModelComplect.getColor().getId(),
+                modelComplectation).isPresent()) {
             throw new DuplicateModelComplectException("Color in this Complectation");
-        } else colorModelComplectRepository.addColor(colorId, modelId, compId, price);
-    }
-
-    @Transactional
-    public void deleteAll(ModelComplectation modelComplectation) {
-        if (colorModelComplectRepository.findAllByModelComplectationColor(modelComplectation).isPresent()) {
-            colorModelComplectRepository.deleteAllByModelComplectationColor(modelComplectation);
+        } else {
+            colorModelComplect.setModelComplectationColor(modelComplectation);
+            colorModelComplectRepository.save(colorModelComplect);
         }
     }
 
     @Transactional
-    public void delete(ColorModelComplect colorModelComplect, Long modelId, Long compId) {
+    public void delete(long colorId, long modelId, long compId) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        colorModelComplectRepository.findByColorIdAndModelComplectationColor(colorModelComplect.getColor().getId(),
-                modelComplectation).orElseThrow(resourceNotFoundNameException(message));
-        colorModelComplectRepository.delete(colorModelComplect.getColor().getId(), modelId, compId);
+        if (colorModelComplectRepository.findAllByModelComplectationColor(modelComplectation)
+                .orElseThrow(() -> new ResourceNotFoundIdException("ModelComplectation")).size() > 1) {
+            colorModelComplectRepository.delete(colorModelComplectRepository
+                    .findByColorIdAndModelComplectationColor(colorId, modelComplectation)
+                    .orElseThrow(() -> new ResourceNotFoundIdException("Color")));
+        } else throw new RuntimeException("The complectation must have at least one color");
     }
 
     @Transactional
-    public void updatePrice(ColorModelComplect colorModelComplect, Long modelId, Long compId) {
+    public void updatePrice(long colorId, long modelId, long compId, int price) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        ColorModelComplect oldColorModelComplect = colorModelComplectRepository.
-                findByColorIdAndModelComplectationColor(colorModelComplect.getColor().getId(),
-                        modelComplectation).orElseThrow(resourceNotFoundNameException(message));
-        oldColorModelComplect.setPrice(colorModelComplect.getPrice());
-        colorModelComplectRepository.save(oldColorModelComplect);
+        ColorModelComplect colorModelComplect = findByColorIdAndModelComplect(colorId, modelComplectation);
+        colorModelComplect.setPrice(price);
+        colorModelComplectRepository.save(colorModelComplect);
     }
 
     public List<ColorModelComplect> findByModelComplectation(ModelComplectation modelComplectation) {
-        return colorModelComplectRepository.findAllByModelComplectationColor(modelComplectation).orElse(new ArrayList<>());
+        return colorModelComplectRepository.findAllByModelComplectationColor(modelComplectation).orElseGet(ArrayList::new);
     }
 
-    public ColorModelComplect findByIdAndModelComplect(Long colorId, ModelComplectation modelComplectation) {
+    public ColorModelComplect findByColorIdAndModelComplect(Long colorId, ModelComplectation modelComplectation) {
         return colorModelComplectRepository.findByColorIdAndModelComplectationColor(colorId, modelComplectation)
-                .orElseThrow(resourceNotFoundNameException(message));
+                .orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 }

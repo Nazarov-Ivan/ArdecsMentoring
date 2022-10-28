@@ -1,15 +1,18 @@
 package com.ardecs.carconfiguration.models.entities;
 
-import javax.persistence.GenerationType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Entity
 @Table(name = "engine")
@@ -33,6 +36,9 @@ public class Engine extends AbstractEntity {
     @NotNull(message = "Power should not be empty")
     @Column(name = "power", nullable = false)
     private Integer power;
+
+    @OneToMany(mappedBy = "engine", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<EngineModelComplect> engineModelComplects;
 
     public Integer getPower() {
         return power;

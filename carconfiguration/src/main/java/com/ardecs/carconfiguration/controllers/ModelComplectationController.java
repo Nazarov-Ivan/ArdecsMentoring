@@ -7,8 +7,6 @@ import com.ardecs.carconfiguration.dto.ComplectationDTO;
 import com.ardecs.carconfiguration.dto.EngineModelComplectDTO;
 import com.ardecs.carconfiguration.dto.ModelComplectationDTO;
 import com.ardecs.carconfiguration.dto.TransModelComplectDTO;
-import com.ardecs.carconfiguration.models.entities.AccessoryModelComplect;
-import com.ardecs.carconfiguration.models.entities.ColorModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.services.AccessoryModelComplectService;
 import com.ardecs.carconfiguration.services.ColorModelComplectService;
@@ -60,19 +58,19 @@ public class ModelComplectationController {
     private final ColorModelComplectMapper colorModelComplectMapper;
 
     @GetMapping("/{modelId}")
-    public List<ComplectationDTO> getModelComplectations(@PathVariable("modelId") long modelId) {
+    public List<ComplectationDTO> getComplectationsByOneModel(@PathVariable("modelId") long modelId) {
         return modelComplectationService.readAllModelComplectations(modelId).stream().map(complectationMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{modelId}/{complectationId}")
-    public ModelComplectationDTO getComplectation(@PathVariable("modelId") long modelId,
+    public ModelComplectationDTO getComplectationInfo(@PathVariable("modelId") long modelId,
                                                   @PathVariable("complectationId") long compId) {
         return modelComplectationMapper.toDto(modelComplectationService.readOneModelComplectation(modelId, compId));
     }
 
-    @PostMapping("/{modelId}/{complectationId}/choose")
-    public Integer chooseAccessoriesAndColorAndGetPrice(@PathVariable("modelId") long modelId,
+    @PostMapping("/{modelId}/{complectationId}")
+    public Integer chooseAccessoriesAndColorPlusGetComplectationPrice(@PathVariable("modelId") long modelId,
                                                         @PathVariable("complectationId") long compId,
                                           @RequestBody @Valid AccessoriesAndColorDTO accessoriesAndColorDTO,
                                           BindingResult bindingResult) {
@@ -91,88 +89,102 @@ public class ModelComplectationController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PostMapping("/{modelId}/{complectationId}/access")
-    public ResponseEntity<HttpStatus> createAccessory(@PathVariable("modelId") long modelId,
-                                                      @PathVariable("complectationId") long compId,
-                                                      @RequestBody @Valid AccessoryModelComplectDTO accessoryModelComplectDTO,
-                                                               BindingResult bindingResult) {
-        ValidationHelper.checkingErrorsMethod(bindingResult);
-        AccessoryModelComplect accessoryModelComplect = accessoryModelComplectMapper.toEntity(accessoryModelComplectDTO);
-        accessoryModelComplectService.create(accessoryModelComplect.getAccessory().getId(), modelId, compId,
-                accessoryModelComplect.getPrice());
-        return ResponseEntity.ok(HttpStatus.CREATED);
-    }
-
-    @PatchMapping("/{modelId}/{complectationId}/access")
-    public void updateAccessoryPrice(@PathVariable("modelId") long modelId, @PathVariable("complectationId") long complectationId,
-                                  @RequestBody @Valid AccessoryModelComplectDTO accessoryModelComplectDTO,
-                                     BindingResult bindingResult) {
-        ValidationHelper.checkingErrorsMethod(bindingResult);
-        accessoryModelComplectService.updatePrice(accessoryModelComplectMapper.toEntity(accessoryModelComplectDTO),
-                modelId, complectationId);
-    }
-
-    @DeleteMapping("/{modelId}/{complectationId}/access")
-    public ResponseEntity<HttpStatus> deleteAccessory(@PathVariable("modelId") long modelId,
-                                                      @PathVariable("complectationId") long compId,
-                                                      @RequestBody @Valid AccessoryModelComplectDTO accessoryModelComplectDTO,
-                                                      BindingResult bindingResult) {
-        ValidationHelper.checkingErrorsMethod(bindingResult);
-        accessoryModelComplectService.delete(accessoryModelComplectMapper.toEntity(accessoryModelComplectDTO), modelId, compId);
+    @DeleteMapping("/{modelId}/{complectationId}")
+    public ResponseEntity<HttpStatus> deleteModelComplectation(@PathVariable("complectationId") long complectationId,
+                                                               @PathVariable("modelId") long modelId) {
+        modelComplectationService.delete(modelId, complectationId);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PatchMapping("/{modelId}/{complectationId}/engine")
     public void updateModelComplectationEngine(@PathVariable("modelId") long modelId,
                                                @PathVariable("complectationId") long complectationId,
-                                         @RequestBody @Valid EngineModelComplectDTO engineModelComplectDTO,
+                                               @RequestBody @Valid EngineModelComplectDTO engineModelComplectDTO,
                                                BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
         engineModelComplectService.update(engineModelComplectMapper.toEntity(engineModelComplectDTO), modelId, complectationId);
     }
 
+    @PatchMapping("/{modelId}/{complectationId}/engine/price")
+    public void updateModelComplectationEnginePrice(@PathVariable("modelId") long modelId,
+                                               @PathVariable("complectationId") long complectationId,
+                                               @RequestBody @Valid int price,
+                                               BindingResult bindingResult) {
+        ValidationHelper.checkingErrorsMethod(bindingResult);
+        engineModelComplectService.updatePrice(modelId, complectationId, price);
+    }
+
     @PatchMapping("/{modelId}/{complectationId}/trans")
     public void updateModelComplectationTransmission(@PathVariable("modelId") long modelId,
                                                      @PathVariable("complectationId") long complectationId,
-                                               @RequestBody @Valid TransModelComplectDTO transModelComplectDTO,
+                                                     @RequestBody @Valid TransModelComplectDTO transModelComplectDTO,
                                                      BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
         transModelComplectService.update(transModelComplectMapper.toEntity(transModelComplectDTO), modelId, complectationId);
     }
 
-    @DeleteMapping("/{modelId}/{complectationId}")
-    public ResponseEntity<HttpStatus> deleteModelComplectation(@PathVariable("complectationId") long complectationId,
-                                             @PathVariable("modelId") long modelId) {
-        modelComplectationService.delete(modelId, complectationId);
+    @PatchMapping("/{modelId}/{complectationId}/trans/price")
+    public void updateModelComplectationTransmissionPrice(@PathVariable("modelId") long modelId,
+                                                     @PathVariable("complectationId") long complectationId,
+                                                     @RequestBody @Valid int price,
+                                                     BindingResult bindingResult) {
+        ValidationHelper.checkingErrorsMethod(bindingResult);
+        transModelComplectService.updatePrice(modelId, complectationId, price);
+    }
+
+    @PostMapping("/{modelId}/{complectationId}/access")
+    public ResponseEntity<HttpStatus> createModelComplectationAccessory(@PathVariable("modelId") long modelId,
+                                                      @PathVariable("complectationId") long compId,
+                                                      @RequestBody @Valid AccessoryModelComplectDTO accessoryModelComplectDTO,
+                                                               BindingResult bindingResult) {
+        ValidationHelper.checkingErrorsMethod(bindingResult);
+        accessoryModelComplectService.create(accessoryModelComplectMapper.toEntity(accessoryModelComplectDTO), modelId, compId);
+        return ResponseEntity.ok(HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{modelId}/{complectationId}/access/{accessId}")
+    public void updateModelComplectationAccessoryPrice(@PathVariable("modelId") long modelId,
+                                                       @PathVariable("complectationId") long complectationId,
+                                     @PathVariable("accessId") long accessId,
+                                     @RequestBody @Valid int price,
+                                     BindingResult bindingResult) {
+        ValidationHelper.checkingErrorsMethod(bindingResult);
+        accessoryModelComplectService.updatePrice(accessId, modelId, complectationId, price);
+    }
+
+    @DeleteMapping("/{modelId}/{complectationId}/access/{accessId}")
+    public ResponseEntity<HttpStatus> deleteModelComplectationAccessory(@PathVariable("modelId") long modelId,
+                                                      @PathVariable("complectationId") long compId,
+                                                      @PathVariable("accessId") long accessId) {
+        accessoryModelComplectService.delete(accessId, modelId, compId);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PostMapping("/{modelId}/{complectationId}/color")
-    public ResponseEntity<HttpStatus> createColor(@PathVariable("modelId") long modelId,
+    public ResponseEntity<HttpStatus> createModelComplectationColor(@PathVariable("modelId") long modelId,
                                                   @PathVariable("complectationId") long compId,
                                                       @RequestBody @Valid ColorModelComplectDTO colorModelComplectDTO,
                                                       BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        ColorModelComplect colorModelComplect = colorModelComplectMapper.toEntity(colorModelComplectDTO);
-        colorModelComplectService.create(colorModelComplect.getColor().getId(), modelId, compId, colorModelComplect.getPrice());
+        colorModelComplectService.create(colorModelComplectMapper.toEntity(colorModelComplectDTO), modelId, compId);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{modelId}/{complectationId}/color")
-    public void updateColorPrice(@PathVariable("modelId") long modelId, @PathVariable("complectationId") long complectationId,
-                                     @RequestBody @Valid ColorModelComplectDTO colorModelComplectDTO,
+    @PatchMapping("/{modelId}/{complectationId}/color/{colorId}")
+    public void updateModelComplectationColorPrice(@PathVariable("modelId") long modelId,
+                                                   @PathVariable("complectationId") long complectationId,
+                                 @PathVariable("colorId") long colorId,
+                                 @RequestBody @Valid int price,
                                  BindingResult bindingResult) {
         ValidationHelper.checkingErrorsMethod(bindingResult);
-        colorModelComplectService.updatePrice(colorModelComplectMapper.toEntity(colorModelComplectDTO), modelId, complectationId);
+        colorModelComplectService.updatePrice(colorId, modelId, complectationId, price);
     }
 
-    @DeleteMapping("/{modelId}/{complectationId}/color")
-    public ResponseEntity<HttpStatus> deleteColor(@PathVariable("modelId") long modelId,
+    @DeleteMapping("/{modelId}/{complectationId}/color/{colorId}")
+    public ResponseEntity<HttpStatus> deleteModelComplectationColor(@PathVariable("modelId") long modelId,
                                                   @PathVariable("complectationId") long compId,
-                                                      @RequestBody @Valid ColorModelComplectDTO colorModelComplectDTO,
-                                                      BindingResult bindingResult) {
-        ValidationHelper.checkingErrorsMethod(bindingResult);
-        colorModelComplectService.delete(colorModelComplectMapper.toEntity(colorModelComplectDTO), modelId, compId);
+                                                  @PathVariable("colorId") long colorId) {
+        colorModelComplectService.delete(colorId, modelId, compId);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }

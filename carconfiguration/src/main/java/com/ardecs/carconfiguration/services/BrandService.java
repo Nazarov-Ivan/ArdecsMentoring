@@ -1,5 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException;
 import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.repositories.BrandRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
@@ -7,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -27,7 +26,7 @@ public class BrandService {
     }
 
     public Brand readOneBrand(long id) {
-        return brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        return brandRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 
     @Transactional
@@ -39,18 +38,18 @@ public class BrandService {
 
     @Transactional
     public void update(Brand brand, long id) {
-        Brand oldBrand = brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        Brand oldBrand = brandRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         oldBrand.setName(brand.getName());
         brandRepository.save(oldBrand);
     }
 
     @Transactional
     public void delete(long id) {
-        brandRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        brandRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         brandRepository.deleteById(id);
     }
 
     public Brand findByName(String name) {
-        return brandRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
+        return brandRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundNameException(message));
     }
 }

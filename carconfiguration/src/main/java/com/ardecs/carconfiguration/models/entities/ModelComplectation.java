@@ -1,14 +1,17 @@
 package com.ardecs.carconfiguration.models.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "model_complectation")
@@ -26,6 +29,18 @@ public class ModelComplectation extends AbstractEntity {
     @MapsId(value = "compId")
     @JoinColumn(name = "comp_id", referencedColumnName = "id", nullable = false)
     private Complectation comp;
+
+    @OneToMany(mappedBy = "modelComplectationEngine", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<EngineModelComplect> engineModelComplects;
+
+    @OneToMany(mappedBy = "modelComplectationTrans", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<TransModelComplect> transModelComplects;
+
+    @OneToMany(mappedBy = "modelComplectationAccessory", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<AccessoryModelComplect> accessoryModelComplectSet;
+
+    @OneToMany(mappedBy = "modelComplectationColor", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<ColorModelComplect> colorModelComplectSet;
 
     @Transient
     private EngineModelComplect engineModelComplect;

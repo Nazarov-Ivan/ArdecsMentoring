@@ -1,13 +1,12 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundModelComplectException;
 import com.ardecs.carconfiguration.models.entities.EngineModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.repositories.EngineModelComplectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundModelComplectException.resourceNotFoundModelComplectException;
 
 /**
  * @author Nazarov Ivan
@@ -22,28 +21,30 @@ public class EngineModelComplectService {
 
     public EngineModelComplect findByModelComplectation(ModelComplectation modelComplectation) {
         return engineModelComplectRepository.findByModelComplectationEngine(modelComplectation).
-                orElseThrow(resourceNotFoundModelComplectException("Engine"));
+                orElseThrow(() -> new ResourceNotFoundModelComplectException("Engine"));
     }
 
     @Transactional
-    public void create(Long engineId, Long modelId, Long compId, int price) {
-        engineModelComplectRepository.addEngine(engineId, modelId, compId, price);
+    public void create(EngineModelComplect engineModelComplect, ModelComplectation modelComplectation) {
+        engineModelComplect.setModelComplectationEngine(modelComplectation);
+        engineModelComplectRepository.save(engineModelComplect);
     }
 
     @Transactional
     public void update(EngineModelComplect engineModelComplect, long modelId, long compId) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
         EngineModelComplect oldEngineModelComplect = engineModelComplectRepository.
-                findByModelComplectationEngine(modelComplectation).orElseThrow(resourceNotFoundModelComplectException("Engine"));
+                findByModelComplectationEngine(modelComplectation).orElseThrow(() -> new ResourceNotFoundModelComplectException("Engine"));
         oldEngineModelComplect.setEngine(engineModelComplect.getEngine());
         oldEngineModelComplect.setPrice(engineModelComplect.getPrice());
         engineModelComplectRepository.save(oldEngineModelComplect);
     }
 
     @Transactional
-    public void delete(ModelComplectation modelComplectation) {
-        engineModelComplectRepository.findByModelComplectationEngine(modelComplectation).
-                orElseThrow(resourceNotFoundModelComplectException(message));
-        engineModelComplectRepository.deleteByModelComplectationEngine(modelComplectation);
+    public void updatePrice(long modelId, long compId, int price) {
+        ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
+        EngineModelComplect engineModelComplect = findByModelComplectation(modelComplectation);
+        engineModelComplect.setPrice(price);
+        engineModelComplectRepository.save(engineModelComplect);
     }
 }

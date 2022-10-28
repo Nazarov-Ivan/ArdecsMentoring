@@ -50,10 +50,11 @@ public class ModelComplectationService {
         int priceAccessories = 0;
         for (String s : accessoriesAndColorDTO.getAccessories()) {
             priceAccessories += accessoryModelComplectService.
-                    findByIdAndModelComplect(accessoryService.findByName(s).getId(), modelComplectation).getPrice();
+                    findByAccessIdAndModelComplect(accessoryService.findByName(s).getId(), modelComplectation).getPrice();
         }
         ColorModelComplect colorModelComplect =  colorModelComplectService
-                .findByIdAndModelComplect(colorService.findByName(accessoriesAndColorDTO.getColor()).getId(), modelComplectation);
+                .findByColorIdAndModelComplect(colorService
+                        .findByName(accessoriesAndColorDTO.getColor()).getId(), modelComplectation);
         return modelComplectation.getModel().getPrice() + modelComplectation.getEngineModelComplect().getPrice()
                 + modelComplectation.getTransModelComplect().getPrice() + priceAccessories + colorModelComplect.getPrice();
     }
@@ -66,21 +67,13 @@ public class ModelComplectationService {
             throw new DuplicateModelComplectException("Complectation");
         } else {
             modelComplectationRepository.save(modelComplectation);
-            long modelId = modelComplectation.getModel().getId();
-            long compId = modelComplectation.getComp().getId();
-            engineModelComplectService.create(engineModelComplect.getEngine().getId(),
-                    modelId, compId,
-                    engineModelComplect.getPrice());
-            transModelComplectService.create(transModelComplect.getTrans().getId(),
-                    modelId, compId,
-                    transModelComplect.getPrice());
+            engineModelComplectService.create(engineModelComplect, modelComplectation);
+            transModelComplectService.create(transModelComplect, modelComplectation);
             for (AccessoryModelComplect modelComplect : accessoryModelComplect) {
-                accessoryModelComplectService.createInModelComplectation(modelComplect.getAccessory().getId(),
-                        modelId, compId, modelComplect.getPrice(), modelComplectation);
+                accessoryModelComplectService.createInModelComplectation(modelComplect, modelComplectation);
             }
             for (ColorModelComplect modelComplect : colorModelComplect) {
-                colorModelComplectService.createInModelComplectation(modelComplect.getColor().getId(),
-                        modelId, compId, modelComplect.getPrice(), modelComplectation);
+                colorModelComplectService.createInModelComplectation(modelComplect, modelComplectation);
             }
         }
     }
@@ -88,10 +81,6 @@ public class ModelComplectationService {
     @Transactional
     public void delete(long modelId, long compId) {
         ModelComplectation modelComplectation = readOneModelComplectation(modelId, compId);
-        engineModelComplectService.delete(modelComplectation);
-        transModelComplectService.delete(modelComplectation);
-        accessoryModelComplectService.deleteAll(modelComplectation);
-        colorModelComplectService.deleteAll(modelComplectation);
         modelComplectationRepository.delete(modelComplectation);
     }
 }

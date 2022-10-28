@@ -13,8 +13,7 @@ import java.util.Optional;
 public interface ComplectationRepository extends JpaRepository<Complectation, Long> {
     Optional<Complectation> findByName(String name);
 
-    @Query(value = "select c.id, c.name from complectation c\n"
-            + "inner JOIN model_complectation mc on c.id = mc.comp_id where model_id = :modelId",
-            nativeQuery = true)
+    @Query("Select c from Complectation c"
+            + " inner JOIN ModelComplectation mc on c.id = mc.comp.id where mc.model.id = :modelId")
     List<Complectation> getCompByIdOfModel(@Param("modelId") Long modelId);
 }

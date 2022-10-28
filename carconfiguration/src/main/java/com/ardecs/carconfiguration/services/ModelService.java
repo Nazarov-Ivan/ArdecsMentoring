@@ -1,6 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException;
 import com.ardecs.carconfiguration.models.entities.Model;
 import com.ardecs.carconfiguration.repositories.ModelRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
@@ -8,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -33,7 +31,7 @@ public class ModelService {
 
     public Model readOneModel(long id, long brandId) {
         brandService.readOneBrand(brandId);
-        return modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        return modelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 
     @Transactional
@@ -47,7 +45,7 @@ public class ModelService {
     @Transactional
     public void update(Model model, long id, long brandId) {
         brandService.readOneBrand(brandId);
-        Model oldModel = modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        Model oldModel = modelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         oldModel.setBrand(model.getBrand());
         oldModel.setPrice(model.getPrice());
         oldModel.setName(model.getName());
@@ -57,11 +55,11 @@ public class ModelService {
     @Transactional
     public void delete(long id, long brandId) {
         brandService.readOneBrand(brandId);
-        modelRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        modelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         modelRepository.deleteById(id);
     }
 
     public Model findByName(String name) {
-        return modelRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
+        return modelRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundNameException(message));
     }
 }

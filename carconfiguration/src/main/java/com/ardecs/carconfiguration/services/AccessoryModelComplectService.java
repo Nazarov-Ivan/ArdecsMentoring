@@ -1,6 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
 import com.ardecs.carconfiguration.exceptions.DuplicateModelComplectException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
 import com.ardecs.carconfiguration.models.entities.AccessoryModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.repositories.AccessoryModelComplectRepository;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -25,50 +24,46 @@ public class AccessoryModelComplectService {
 
     public List<AccessoryModelComplect> findByModelComplectation(ModelComplectation modelComplectation) {
         return accessoryModelComplectRepository.findAllByModelComplectationAccessory(modelComplectation)
-                .orElse(new ArrayList<>());
+                .orElseGet(ArrayList::new);
     }
 
     @Transactional
-    public void create(Long accessId, Long modelId, Long compId, int price) {
+    public void create(AccessoryModelComplect accessoryModelComplect, Long modelId, Long compId) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        createInModelComplectation(accessId, modelId, compId, price, modelComplectation);
+        createInModelComplectation(accessoryModelComplect, modelComplectation);
     }
 
     @Transactional
-    public void createInModelComplectation(Long accessId, Long modelId, Long compId, int price,
+    public void createInModelComplectation(AccessoryModelComplect accessoryModelComplect,
                                            ModelComplectation modelComplectation) {
-        if (accessoryModelComplectRepository.findByAccessoryIdAndModelComplectationAccessory(accessId,
-                modelComplectation).isPresent()) {
+        if (accessoryModelComplectRepository.findByAccessoryIdAndModelComplectationAccessory(accessoryModelComplect.
+                getAccessory().getId(), modelComplectation).isPresent()) {
             throw new DuplicateModelComplectException("Accessory in this Complectation");
-        } else accessoryModelComplectRepository.addAccessory(accessId, modelId, compId, price);
-    }
-
-    public AccessoryModelComplect findByIdAndModelComplect(Long accessId, ModelComplectation modelComplectation) {
-        return accessoryModelComplectRepository.findByAccessoryIdAndModelComplectationAccessory(accessId, modelComplectation)
-                .orElseThrow(resourceNotFoundNameException(message));
-    }
-
-    @Transactional
-    public void deleteAll(ModelComplectation modelComplectation) {
-        if (accessoryModelComplectRepository.findAllByModelComplectationAccessory(modelComplectation).isPresent()) {
-            accessoryModelComplectRepository.deleteAllByModelComplectationAccessory(modelComplectation);
+        } else {
+            accessoryModelComplect.setModelComplectationAccessory(modelComplectation);
+            accessoryModelComplectRepository.save(accessoryModelComplect);
         }
+
+    }
+
+    public AccessoryModelComplect findByAccessIdAndModelComplect(Long accessId, ModelComplectation modelComplectation) {
+        return accessoryModelComplectRepository.findByAccessoryIdAndModelComplectationAccessory(accessId, modelComplectation)
+                .orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 
     @Transactional
-    public void delete(AccessoryModelComplect accessoryModelComplect, Long modelId, Long compId) {
+    public void delete(long accessoryId, long modelId, long compId) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        findByIdAndModelComplect(accessoryModelComplect.getAccessory().getId(), modelComplectation);
-        accessoryModelComplectRepository.delete(accessoryModelComplect.getAccessory().getId(), modelId, compId);
+        accessoryModelComplectRepository.delete(accessoryModelComplectRepository
+                .findByAccessoryIdAndModelComplectationAccessory(accessoryId, modelComplectation)
+                .orElseThrow(() -> new ResourceNotFoundIdException("Accessory")));
     }
 
     @Transactional
-    public void updatePrice(AccessoryModelComplect accessoryModelComplect, Long modelId, Long compId) {
+    public void updatePrice(long accessoryId, long modelId, long compId, int price) {
         ModelComplectation modelComplectation = servicesHelper.findModelComplectById(modelId, compId);
-        AccessoryModelComplect oldAccessoryModelComplect = accessoryModelComplectRepository.
-                findByAccessoryIdAndModelComplectationAccessory(accessoryModelComplect.getAccessory().getId(),
-                modelComplectation).orElseThrow(resourceNotFoundNameException(message));
-        oldAccessoryModelComplect.setPrice(accessoryModelComplect.getPrice());
-        accessoryModelComplectRepository.save(oldAccessoryModelComplect);
+        AccessoryModelComplect accessoryModelComplect = findByAccessIdAndModelComplect(accessoryId, modelComplectation);
+        accessoryModelComplect.setPrice(price);
+        accessoryModelComplectRepository.save(accessoryModelComplect);
     }
 }

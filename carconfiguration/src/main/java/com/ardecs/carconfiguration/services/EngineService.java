@@ -1,5 +1,7 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException;
 import com.ardecs.carconfiguration.models.entities.Engine;
 import com.ardecs.carconfiguration.repositories.EngineRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
@@ -7,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
-
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException.resourceNotFoundIdException;
-import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameException.resourceNotFoundNameException;
 
 /**
  * @author Nazarov Ivan
@@ -26,7 +25,7 @@ public class EngineService {
     }
 
     public Engine readOneEngine(long id) {
-        return engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        return engineRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
     }
 
     @Transactional
@@ -38,7 +37,7 @@ public class EngineService {
 
     @Transactional
     public void update(Engine engine, long id) {
-        Engine oldEngine = engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        Engine oldEngine = engineRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         oldEngine.setName(engine.getName());
         oldEngine.setDescription(engine.getDescription());
         oldEngine.setPower(engine.getPower());
@@ -47,11 +46,11 @@ public class EngineService {
 
     @Transactional
     public void delete(long id) {
-        engineRepository.findById(id).orElseThrow(resourceNotFoundIdException(message));
+        engineRepository.findById(id).orElseThrow(() -> new ResourceNotFoundIdException(message));
         engineRepository.deleteById(id);
     }
 
     public Engine findByName(String name) {
-        return engineRepository.findByName(name).orElseThrow(resourceNotFoundNameException(message));
+        return engineRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundNameException(message));
     }
 }
