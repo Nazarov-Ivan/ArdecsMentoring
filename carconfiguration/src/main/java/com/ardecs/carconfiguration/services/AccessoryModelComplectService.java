@@ -4,6 +4,7 @@ import com.ardecs.carconfiguration.exceptions.DuplicateModelComplectException;
 import com.ardecs.carconfiguration.models.entities.AccessoryModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.repositories.AccessoryModelComplectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -16,16 +17,11 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class AccessoryModelComplectService {
     private final String message = "ModelComplectationAccessory";
-    AccessoryModelComplectRepository accessoryModelComplectRepository;
-    ServicesHelper servicesHelper;
-
-    public AccessoryModelComplectService(AccessoryModelComplectRepository accessoryModelComplectRepository,
-                                         ServicesHelper servicesHelper) {
-        this.accessoryModelComplectRepository = accessoryModelComplectRepository;
-        this.servicesHelper = servicesHelper;
-    }
+    private final AccessoryModelComplectRepository accessoryModelComplectRepository;
+    private final ServicesHelper servicesHelper;
 
     public List<AccessoryModelComplect> findByModelComplectation(ModelComplectation modelComplectation) {
         return accessoryModelComplectRepository.findAllByModelComplectationAccessory(modelComplectation)

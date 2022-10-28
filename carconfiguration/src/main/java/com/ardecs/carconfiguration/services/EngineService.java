@@ -3,6 +3,7 @@ package com.ardecs.carconfiguration.services;
 import com.ardecs.carconfiguration.models.entities.Engine;
 import com.ardecs.carconfiguration.repositories.EngineRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -15,13 +16,10 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class EngineService {
     private final String message = "Engine";
     private final EngineRepository engineRepository;
-
-    public EngineService(EngineRepository accessoryRepository) {
-        this.engineRepository = accessoryRepository;
-    }
 
     public List<Engine> readAllEngines() {
         return engineRepository.findAll();

@@ -3,6 +3,7 @@ package com.ardecs.carconfiguration.services;
 import com.ardecs.carconfiguration.models.entities.Brand;
 import com.ardecs.carconfiguration.repositories.BrandRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -16,13 +17,10 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  */
 
 @Service
+@RequiredArgsConstructor
 public class BrandService {
     private final String message = "Brand";
     private final BrandRepository brandRepository;
-
-    public BrandService(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
-    }
 
     public List<Brand> readAllBrands() {
         return brandRepository.findAll();

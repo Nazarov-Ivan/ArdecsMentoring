@@ -1,8 +1,10 @@
 package com.ardecs.carconfiguration.services;
 
+import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
 import com.ardecs.carconfiguration.models.entities.Complectation;
 import com.ardecs.carconfiguration.repositories.ComplectationRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -15,13 +17,10 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class ComplectationService {
     private final String message = "Complectation";
     private final ComplectationRepository complectationRepository;
-
-    public ComplectationService(ComplectationRepository complectationRepository) {
-        this.complectationRepository = complectationRepository;
-    }
 
     public List<Complectation> readAllComplectations() {
         return complectationRepository.findAll();
@@ -52,7 +51,10 @@ public class ComplectationService {
     }
 
     public List<Complectation> getCompByModelId(long modelId) {
-        return complectationRepository.getCompByIdOfModel(modelId);
+        List<Complectation> complectationList = complectationRepository.getCompByIdOfModel(modelId);
+        if (complectationList.isEmpty()) {
+            throw new ResourceNotFoundIdException("Complectations in model");
+        } else return complectationList;
     }
 
     public Complectation findByName(String name) {

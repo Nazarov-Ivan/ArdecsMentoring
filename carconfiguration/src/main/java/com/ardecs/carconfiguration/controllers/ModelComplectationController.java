@@ -52,7 +52,7 @@ public class ModelComplectationController {
     private final TransModelComplectService transModelComplectService;
     private final AccessoryModelComplectService accessoryModelComplectService;
     private final ColorModelComplectService colorModelComplectService;
-    private final ComplectationMapper modelMapper;
+    private final ComplectationMapper complectationMapper;
     private final ModelComplectationMapper modelComplectationMapper;
     private final EngineModelComplectMapper engineModelComplectMapper;
     private final TransModelComplectMapper transModelComplectMapper;
@@ -61,7 +61,7 @@ public class ModelComplectationController {
 
     @GetMapping("/{modelId}")
     public List<ComplectationDTO> getModelComplectations(@PathVariable("modelId") long modelId) {
-        return modelComplectationService.readAllModelComplectations(modelId).stream().map(modelMapper::toDto)
+        return modelComplectationService.readAllModelComplectations(modelId).stream().map(complectationMapper::toDto)
                 .collect(Collectors.toList());
     }
 

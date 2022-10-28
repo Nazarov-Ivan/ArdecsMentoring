@@ -3,6 +3,7 @@ package com.ardecs.carconfiguration.services;
 import com.ardecs.carconfiguration.models.entities.Accessory;
 import com.ardecs.carconfiguration.repositories.AccessoryRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -16,13 +17,10 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  */
 
 @Service
+@RequiredArgsConstructor
 public class AccessoryService {
     private final String message = "Accessory";
     private final AccessoryRepository accessoryRepository;
-
-    public AccessoryService(AccessoryRepository accessoryRepository) {
-        this.accessoryRepository = accessoryRepository;
-    }
 
     public List<Accessory> readAllAccessories() {
         return accessoryRepository.findAll();

@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class AccessoriesAndColorDTO extends AbstractDTO {
-    @NotNull(message = "Accessories name should not be empty")
+
     private List<String> accessories;
     @NotNull(message = "Color name should not be empty")
     private String color;

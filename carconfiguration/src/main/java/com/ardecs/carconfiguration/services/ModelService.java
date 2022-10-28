@@ -4,6 +4,7 @@ import com.ardecs.carconfiguration.exceptions.ResourceNotFoundIdException;
 import com.ardecs.carconfiguration.models.entities.Model;
 import com.ardecs.carconfiguration.repositories.ModelRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateNameException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -16,16 +17,12 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class ModelService {
 
     private final String message = "Model";
     private final ModelRepository modelRepository;
     private final BrandService brandService;
-
-    public ModelService(ModelRepository modelRepository, BrandService brandService) {
-        this.modelRepository = modelRepository;
-        this.brandService = brandService;
-    }
 
     public List<Model> readAllModels(long brandId) {
         List<Model> models = modelRepository.findAllByBrand(brandService.readOneBrand(brandId));

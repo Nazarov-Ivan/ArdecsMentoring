@@ -3,6 +3,7 @@ package com.ardecs.carconfiguration.services;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.models.entities.TransModelComplect;
 import com.ardecs.carconfiguration.repositories.TransModelComplectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
@@ -13,15 +14,11 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundModelComple
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class TransModelComplectService {
     private final String message = "Transmission";
     private final TransModelComplectRepository transModelComplectRepository;
-    ServicesHelper servicesHelper;
-
-    public TransModelComplectService(TransModelComplectRepository transModelComplectRepository, ServicesHelper servicesHelper) {
-        this.transModelComplectRepository = transModelComplectRepository;
-        this.servicesHelper = servicesHelper;
-    }
+    private final ServicesHelper servicesHelper;
 
     public TransModelComplect findByModelComplectation(ModelComplectation modelComplectation) {
         return transModelComplectRepository.findByModelComplectationTrans(modelComplectation).

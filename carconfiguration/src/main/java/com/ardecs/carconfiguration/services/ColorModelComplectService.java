@@ -4,6 +4,7 @@ import com.ardecs.carconfiguration.exceptions.DuplicateModelComplectException;
 import com.ardecs.carconfiguration.models.entities.ColorModelComplect;
 import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.repositories.ColorModelComplectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -16,15 +17,11 @@ import static com.ardecs.carconfiguration.exceptions.ResourceNotFoundNameExcepti
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class ColorModelComplectService {
     private final String message = "ModelComplectationColor";
-    ColorModelComplectRepository colorModelComplectRepository;
-    ServicesHelper servicesHelper;
-
-    public ColorModelComplectService(ColorModelComplectRepository colorModelComplectRepository,  ServicesHelper servicesHelper) {
-        this.colorModelComplectRepository = colorModelComplectRepository;
-        this.servicesHelper = servicesHelper;
-    }
+    private final ColorModelComplectRepository colorModelComplectRepository;
+    private final ServicesHelper servicesHelper;
 
     @Transactional
     public void create(Long colorId, Long modelId, Long compId, int price) {

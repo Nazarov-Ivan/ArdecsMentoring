@@ -9,6 +9,7 @@ import com.ardecs.carconfiguration.models.entities.ModelComplectation;
 import com.ardecs.carconfiguration.models.entities.TransModelComplect;
 import com.ardecs.carconfiguration.repositories.ModelComplectationRepository;
 import com.ardecs.carconfiguration.exceptions.DuplicateModelComplectException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -18,35 +19,18 @@ import java.util.List;
  * @date 10/14/2022
  */
 @Service
+@RequiredArgsConstructor
 public class ModelComplectationService {
-    ModelComplectationRepository modelComplectationRepository;
-    ComplectationService complectationService;
-    AccessoryModelComplectService accessoryModelComplectService;
-    EngineModelComplectService engineModelComplectService;
-    TransModelComplectService transModelComplectService;
-    ColorModelComplectService colorModelComplectService;
-    ServicesHelper servicesHelper;
-    AccessoryService accessoryService;
-    ColorService colorService;
 
-    public ModelComplectationService(ModelComplectationRepository modelComplectationRepository,
-                                     ComplectationService complectationService,
-                                     AccessoryModelComplectService accessoryModelComplectService,
-                                     EngineModelComplectService engineModelComplectService,
-                                     TransModelComplectService transModelComplectService,
-                                     ColorModelComplectService colorModelComplectService,
-                                     AccessoryService accessoryService, ColorService colorService,
-                                     ServicesHelper servicesHelper) {
-        this.modelComplectationRepository = modelComplectationRepository;
-        this.complectationService =  complectationService;
-        this.accessoryModelComplectService = accessoryModelComplectService;
-        this.engineModelComplectService = engineModelComplectService;
-        this.transModelComplectService = transModelComplectService;
-        this.colorModelComplectService = colorModelComplectService;
-        this.accessoryService = accessoryService;
-        this.colorService = colorService;
-        this.servicesHelper = servicesHelper;
-    }
+    private final ModelComplectationRepository modelComplectationRepository;
+    private final ComplectationService complectationService;
+    private final AccessoryModelComplectService accessoryModelComplectService;
+    private final EngineModelComplectService engineModelComplectService;
+    private final TransModelComplectService transModelComplectService;
+    private final ColorModelComplectService colorModelComplectService;
+    private final ServicesHelper servicesHelper;
+    private final AccessoryService accessoryService;
+    private final ColorService colorService;
 
     public List<Complectation> readAllModelComplectations(long modelId) {
         return  complectationService.getCompByModelId(modelId);
